@@ -5,4 +5,4 @@ For complete and accurate information on how to use the language, see the [offic
 
 This site is meant to provide some basic examples on some different functionalities of the Cairo language and some of the most common security concerns that are prevalent to this language and ecosystem.
 
-({{ site.baseurl }}{% link cairo/cario-by-example/hello_world.md %}).
+- [**Hello World**]({{ site.baseurl }}{% link cairo/cario-by-example/hello_world.md %}).

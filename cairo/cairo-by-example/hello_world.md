@@ -1,5 +1,4 @@
 ---
-layout: page
 title:  "Hello World on StarkNet"
 permalink: /cairo/cairo-by-example/hello_world.md
 toc: false

@@ -1,9 +1,5 @@
 title: Frazer's Cairo notes.
-author: Frazer
-description: >- # this means to ignore newlines until "baseurl:"
-  Cairo basics and security by example.
-baseurl: ""
-url: ""
 
 # Build settings
 theme: minima
+markdown: kramdown

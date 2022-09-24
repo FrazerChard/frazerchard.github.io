@@ -29,7 +29,9 @@ func hello_world() -> (num_1: felt, num_2: felt) {
 }
 ```
 
-## Constructors
+## Function Decorators
+
+### Constructors
 
 ```javascript
 // Declare this file as a StarkNet contract.
@@ -70,7 +72,7 @@ func read_special_values{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_c
 
 ```
 
-## Function Decorators
+### Function Visibility
 
 - Functions with a decorator (@view, @external @storage) only handles felt type arguments
 - Generic helper functions can be used to handle arguments other than felt
@@ -149,42 +151,8 @@ func helper_3(a_b_data: dataStruct) -> (processed_data: felt) {
 
 ```
 
-## Assert
 
-```javascript
-// An assert statement can be used for two purposes
-// Checking the value of two variables are the same
-// Setting the value of a variable that currently has no value
-
-// Declare this file as a StarkNet contract.
-%lang starknet
-
-struct Registry {
-    val_0: felt,
-    val_1: felt,
-}
-
-@view
-func asserter(test_0: felt, test_1: felt) -> (val_1: felt, val_2: felt) {
-    alloc_locals;
-    // Define a new instance of Registry struct
-    local newRegistry: Registry;
-    // Set value of a member
-    assert newRegistry.val_0 = test_0;
-    // Assert that the value is something else
-    // Will fail unless 66 is chosen for test_0
-    assert newRegistry.val_0 = 66;
-
-    // Set the other value
-    assert newRegistry.val_1 = test_1;
-
-    // Assert that the two members do not have the same value
-    assert newRegistry.val_0 = newRegistry.val_1;
-    return (newRegistry.val_0, newRegistry.val_1);
-}
-```
-
-## Data Structures
+## Basic Data Structures
 
 ### Data Types
 
@@ -215,8 +183,6 @@ func types(user_number: felt) -> (
 }
 
 ```
-
-
 ### Variables
 
 ```javascript
@@ -303,6 +269,41 @@ func get{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}() -> (
 func save{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(input: felt) {
     balance.write(input);
     return ();
+}
+```
+
+### Assert
+
+```javascript
+// An assert statement can be used for two purposes
+// Checking the value of two variables are the same
+// Setting the value of a variable that currently has no value
+
+// Declare this file as a StarkNet contract.
+%lang starknet
+
+struct Registry {
+    val_0: felt,
+    val_1: felt,
+}
+
+@view
+func asserter(test_0: felt, test_1: felt) -> (val_1: felt, val_2: felt) {
+    alloc_locals;
+    // Define a new instance of Registry struct
+    local newRegistry: Registry;
+    // Set value of a member
+    assert newRegistry.val_0 = test_0;
+    // Assert that the value is something else
+    // Will fail unless 66 is chosen for test_0
+    assert newRegistry.val_0 = 66;
+
+    // Set the other value
+    assert newRegistry.val_1 = test_1;
+
+    // Assert that the two members do not have the same value
+    assert newRegistry.val_0 = newRegistry.val_1;
+    return (newRegistry.val_0, newRegistry.val_1);
 }
 ```
 
@@ -396,7 +397,7 @@ func tuple_maker(val: felt) -> (a_tuple: felt*) {
 
 ```
 
-### Tuples
+## Tuples
 
 ```javascript
 // Declare this file as a StarkNet contract.
@@ -477,7 +478,7 @@ func save{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
 }
 ```
 
-### Arrays
+## Arrays
 
 Arrays are defined using a pointer to the first element of the array.
 Their values are addressed by their location in memory relative to the pointer
@@ -583,7 +584,7 @@ func save{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
 
 ```
 
-### Structs
+## Structs
 
 ```javascript
 // Declare this file as a StarkNet contract.

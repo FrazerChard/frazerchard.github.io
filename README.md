@@ -72,12 +72,12 @@ func read_special_values{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_c
 
 ## Function Decorators
 
--Functions with a decorator (@view, @external @storage) only handles felt type arguments
--Generic helper functions can be used to handle arguments other than felt
+- Functions with a decorator (@view, @external @storage) only handles felt type arguments
+- Generic helper functions can be used to handle arguments other than felt
 
--Contracts have 2 entry points, where generic functions or storage may be accessed
--@external for writing -> @storage to write state, or use a generic helper function
--@view for reading -> @storage to read state, or use a generic helper function
+- Contracts have 2 entry points, where generic functions or storage may be accessed
+- @external for writing -> @storage to write state, or use a generic helper function
+- @view for reading -> @storage to read state, or use a generic helper function
 
 
 ```javascript
@@ -274,7 +274,7 @@ func use_variables{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_p
     return ();
 }
 ```
-## Read and Write
+### Read and Write
 
 ```javascript
 // Declare this file as a StarkNet contract.
@@ -778,10 +778,10 @@ func read_inventory{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_
 
 ### Dictionary
 
--Get a pointer to a new dictionary with default_dict_new()
--Assert its integrity with default_dict_finalize()
--Assign a value to a key dict_write()
--Read the value of a key dict_read()
+- Get a pointer to a new dictionary with default_dict_new()
+- Assert its integrity with default_dict_finalize()
+- Assign a value to a key dict_write()
+- Read the value of a key dict_read()
 
 ```javascript
 %lang starknet
@@ -966,14 +966,14 @@ func perform_function_total{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, rang
 ### Recursive Loops
 
 Steps to Recursive Loops
--Specify loop length
--A looping function is called with a list of elements
--It checks if the element if the final one, if not it increments and calls itself.
--The previous step is repeated until the final element is reached
--The function continues to execute the desired operation
--The second last element is reached, then the third last, right until the first element
--The end of the function is reaches
--The result is returned to the calling function
+- Specify loop length
+- A looping function is called with a list of elements
+- It checks if the element if the final one, if not it increments and calls itself.
+- The previous step is repeated until the final element is reached
+- The function continues to execute the desired operation
+- The second last element is reached, then the third last, right until the first element
+- The end of the function is reaches
+- The result is returned to the calling function
 
 ```javascript
 // Declare this file as a StarkNet contract.
@@ -1338,12 +1338,12 @@ func check_values{range_check_ptr}(num_1: felt, num_2: felt) -> (
 
 ### Math Comparison
 
--Not Zero - `is_not_zero(val)` : Checks if val is not zero
--Not Negative - `is_nn(val)` : Checks if val is not negative
--Not Negative and less than or equal to - `is_nn_le(val)` : Checks if val is not negative and is less than or equal to a
--Less than or equal to - `is_le(val, a)` : Checks if val less than or equal to a
--In range - `is_in_range(val, a, b)` - Checks if val larger than or equal to a and smaller than or equal to b
--Less than or equal to for felts - `is_le_felt(a, b)` : Checks if a_high is less than b_high, obtained using split_felt(val)
+- Not Zero - `is_not_zero(val)` : Checks if val is not zero
+- Not Negative - `is_nn(val)` : Checks if val is not negative
+- Not Negative and less than or equal to - `is_nn_le(val)` : Checks if val is not negative and is less than or equal to a
+- Less than or equal to - `is_le(val, a)` : Checks if val less than or equal to a
+- In range - `is_in_range(val, a, b)` - Checks if val larger than or equal to a and smaller than or equal to b
+- Less than or equal to for felts - `is_le_felt(a, b)` : Checks if a_high is less than b_high, obtained using split_felt(val)
 
 ```javascript
 // Declare this file as a StarkNet contract.
@@ -1604,9 +1604,9 @@ func check_bitwise{bitwise_ptr: BitwiseBuiltin*}() -> () {
 
 ### Generate Message
 
-Starknet contract can message L1 using the send_message_to_L1() function containing the arguments 'to_address', 'payload_size' and 'payload'
+Starknet contract can message L1 using the send_message_to_L1() function containing the arguments `to_address`, `payload_size` and `payload`.
 
-This can be recieved by calling the L1 Starkent contract function 'consumeMessageFromL2()' from the addressed specified in the 'to_address' above containing the arguments 'from_address' (L2 address) and 'payload'
+This can be recieved by calling the L1 Starkent contract function `consumeMessageFromL2()` from the addressed specified in the `to_address` above containing the arguments `from_address` (L2 address) and `payload`.
 
 ```javascript
 // Declare this file as a StarkNet contract.
@@ -1640,14 +1640,11 @@ func generate{syscall_ptr: felt*, range_check_ptr}() {
 StarkNet (SN) contract can specify a message for an L1 Ethereum (ETH) contract to recieve.
 Three steps to this - generate, verify and digest
 1 - Custom contract on SN :
-Generates message -> application specific contract containing 'send_message_to_l1()
+    Generates message -> application specific contract containing `send_message_to_l1()`
 2 SN contract on ETH :
-Verifies message validity -> StarkNet.sol contains function 'consumeMessageFromL2()
--> computes the hash that ties the messages to both L1 and L2 contracts
--> checks hash is stored as a fact, verified by STARK validity proof
+    Verifies message validity -> StarkNet.sol contains function `consumeMessageFromL2()` -> computes the hash that ties the messages to both L1 and L2 contracts -> checks hash is stored as a fact, verified by STARK validity proof
 3 Custom contract on ETH :
-Digests message -> L1L2Example.sol contains 'withdraw()' function. -> this calls
-'StarkNet.sol' and verifies that the payload is valid from the specified L2 address
+    Digests message -> L1L2Example.sol contains `withdraw()` function. -> this calls `StarkNet.sol` and verifies that the payload is valid from the specified L2 address.
 
 ```javascript
 // Declare this file as a StarkNet contract.

@@ -374,8 +374,8 @@ func save{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
 ## **Arrays**
 
 **DESCRIPTION**
-Arrays are defined using a pointer to the first element of the array.
-Their values are addressed by their location in memory relative to the pointer
+- Arrays are defined using a pointer to the first element of the array.
+- Their values are addressed by their location in memory relative to the pointer
 
 ```javascript
 // Declare this file as a StarkNet contract.
@@ -998,15 +998,15 @@ func perform_function_total{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, rang
 ### **Recursive Loops**
 
 **DESCRIPTION**
-Steps to Recursive Loops
-- Specify loop length
-- A looping function is called with a list of elements
-- It checks if the element if the final one, if not it increments and calls itself.
-- The previous step is repeated until the final element is reached
-- The function continues to execute the desired operation
-- The second last element is reached, then the third last, right until the first element
-- The end of the function is reaches
-- The result is returned to the calling function
+- Steps to Recursive Loops
+    - Specify loop length
+    - A looping function is called with a list of elements
+    - It checks if the element if the final one, if not it increments and calls itself.
+    - The previous step is repeated until the final element is reached
+    - The function continues to execute the desired operation
+    - The second last element is reached, then the third last, right until the first element
+    - The end of the function is reaches
+    - The result is returned to the calling function
 
 ```javascript
 // Declare this file as a StarkNet contract.
@@ -1246,7 +1246,6 @@ func increment{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
 ### **Basic Math**
 
 **DESCRIPTION**
-
 
 - Not zero - `assert_not_zero(val)` : Asserts val is not zero.
 - Not equal - `assert_not_equal(a, b)` : Asserts that a is not equal to b.
@@ -1651,9 +1650,9 @@ func check_bitwise{bitwise_ptr: BitwiseBuiltin*}() -> () {
 ### **Generate Message**
 
 **DESCRIPTION**
-Starknet contract can message L1 using the send_message_to_L1() function containing the arguments `to_address`, `payload_size` and `payload`.
+- Starknet contract can message L1 using the send_message_to_L1() function containing the arguments `to_address`, `payload_size` and `payload`.
 
-This can be recieved by calling the L1 Starkent contract function `consumeMessageFromL2()` from the addressed specified in the `to_address` above containing the arguments `from_address` (L2 address) and `payload`.
+- This can be recieved by calling the L1 Starkent contract function `consumeMessageFromL2()` from the addressed specified in the `to_address` above containing the arguments `from_address` (L2 address) and `payload`.
 
 ```javascript
 // Declare this file as a StarkNet contract.
@@ -1685,6 +1684,7 @@ func generate{syscall_ptr: felt*, range_check_ptr}() {
 ### **Send Message to L1**
 
 **DESCRIPTION**
+
 StarkNet (SN) contract can specify a message for an L1 Ethereum (ETH) contract to recieve.
 Three steps to this - generate, verify and digest
 STEPS:
@@ -1734,10 +1734,10 @@ func increase_L1_balance{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_c
 ### **Recieve Message**
 
 **DESCRIPTION**
-StarkNet contract can receive an L1 message using the @l1_handler
-The recieving function is 'actioned' by the Starknet sequencer and then recieves the arguments `from_address` (l1 contract address thag sent the message) and message elements as type felt.
+- StarkNet contract can receive an L1 message using the @l1_handler
+- The recieving function is 'actioned' by the Starknet sequencer and then recieves the arguments `from_address` (l1 contract address thag sent the message) and message elements as type felt.
 
-The message originates on L1 with a call to Starknet contract function sendMessageToL2() with the arguments `to_address` (L2 address), `selector` and `payload`.
+- The message originates on L1 with a call to Starknet contract function sendMessageToL2() with the arguments `to_address` (L2 address), `selector` and `payload`.
 
 ```javascript
 // Declare this file as a StarkNet contract.
@@ -1799,15 +1799,15 @@ func get_hash{pedersen_ptr: HashBuiltin*}(x, y) -> (hash: felt, hash_with_zero: 
 ### **Verify ECDSA**
 
 **DESCRIPTION**
-Cairo has a bultin to perform ECDSA signature verification.
-STEPS:
-- 1: Create a message to sign
-- 2: hash message using pedersen function 
-- 3: obtain private key 
-- 4: sign message hash using priv key 
-- 5: record sig_r & sig_s
+- Cairo has a bultin to perform ECDSA signature verification.
+- STEPS:
+    - 1: Create a message to sign
+    - 2: hash message using pedersen function 
+    - 3: obtain private key 
+    - 4: sign message hash using priv key 
+    - 5: record sig_r & sig_s
 
-Python script can be used to generate private key but in this case, we are using the hardcoded values.
+- A Python script can be used to generate private key but in this case, we are using the hardcoded values.
 
 - `message_hash` ("13579") : 2255487090060981340412778270523682108366421523848318719210969003889439916982
 - `public_key` : 336651705928807190204460653884405974785205047669862626875647782176669707088

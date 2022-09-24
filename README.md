@@ -35,7 +35,7 @@ func hello_world() -> (num_1: felt, num_2: felt) {
 
 **DESCRIPTION**
 
-```javascript
+```rust
 // Declare this file as a StarkNet contract.
 %lang starknet
 // Range check will ensure numbers stay within the felt range
@@ -66,7 +66,7 @@ func types(user_number: felt) -> (
 
 **DESCRIPTION**
 
-```javascript
+```rust
 // Declare this file as a StarkNet contract.
 %lang starknet
 // Range check will ensure numbers stay within the felt range
@@ -125,7 +125,7 @@ func use_variables{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_p
 
 **DESCRIPTION**
 
-```javascript
+```rust
 // Declare this file as a StarkNet contract.
 %lang starknet
 // Range check will ensure numbers stay within the felt range
@@ -159,7 +159,7 @@ func save{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(input
 
 **DESCRIPTION**
 
-```javascript
+```rust
 // An assert statement can be used for two purposes
 // Checking the value of two variables are the same
 // Setting the value of a variable that currently has no value
@@ -196,7 +196,7 @@ func asserter(test_0: felt, test_1: felt) -> (val_1: felt, val_2: felt) {
 
 **DESCRIPTION**
 
-```javascript
+```rust
 // Declare this file as a StarkNet contract.
 %lang starknet
 // Range check will ensure numbers stay within the felt range
@@ -254,7 +254,7 @@ func read_values{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr
 
 **DESCRIPTION**
 
-```javascript
+```rust
 // Declare this file as a StarkNet contract.
 %lang starknet
 
@@ -290,7 +290,7 @@ func tuple_maker(val: felt) -> (a_tuple: felt*) {
 
 **DESCRIPTION**
 
-```javascript
+```rust
 // Declare this file as a StarkNet contract.
 %lang starknet
 
@@ -333,7 +333,7 @@ func get_sum(tuple_ptr: felt*, idx_1: felt, idx_2: felt) -> (total: felt) {
 
 **DESCRIPTION**
 
-```javascript
+```rust
 // Declare this file as a StarkNet contract.
 %lang starknet
 // Range check will ensure numbers stay within the felt range
@@ -377,7 +377,7 @@ func save{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
 - Arrays are defined using a pointer to the first element of the array.
 - Their values are addressed by their location in memory relative to the pointer
 
-```javascript
+```rust
 // Declare this file as a StarkNet contract.
 %lang starknet
 // Range check will ensure numbers stay within the felt range
@@ -409,7 +409,7 @@ func read_array{range_check_ptr}(index: felt) -> (value: felt) {
 
 **DESCRIPTION**
 
-```javascript
+```rust
 // Declare this file as a StarkNet contract.
 %lang starknet
 // Range check will ensure numbers stay within the felt range
@@ -447,7 +447,7 @@ func save{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
 
 **DESCRIPTION**
 
-```javascript
+```rust
 // Declare this file as a StarkNet contract.
 %lang starknet
 // Range check will ensure numbers stay within the felt range
@@ -486,7 +486,7 @@ func save{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
 
 **DESCRIPTION**
 
-```javascript
+```rust
 // Declare this file as a StarkNet contract.
 %lang starknet
 // Range check will ensure numbers stay within the felt range
@@ -538,7 +538,7 @@ func register_user{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_p
 
 #### **Struct Returns User Database**
 
-```javascript
+```rust
 // Declare this file as a StarkNet contract.
 %lang starknet
 // Range check will ensure numbers stay within the felt range
@@ -590,7 +590,7 @@ func register_user{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_p
 
 #### **Struct Returns User Analyst**
 
-```javascript
+```rust
 // Declare this file as a StarkNet contract.
 %lang starknet
 // Range check will ensure numbers stay within the felt range
@@ -628,7 +628,7 @@ func score_user{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}
 
 **DESCRIPTION**
 
-```javascript
+```rust
 // Declare this file as a StarkNet contract.
 %lang starknet
 // Range check will ensure numbers stay within the felt range
@@ -689,7 +689,7 @@ func read_inventory{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_
 - Assign a value to a key `dict_write()`
 - Read the value of a key `dict_read()`
 
-```javascript
+```rust
 %lang starknet
 %builtins range_check
 
@@ -741,7 +741,7 @@ func get_value_of_key{range_check_ptr}(key_1: felt, key_2: felt, key_3: felt) ->
 
 **DESCRIPTION**
 
-```javascript
+```rust
 // Declare this file as a StarkNet contract.
 %lang starknet
 // Range check will ensure numbers stay within the felt range
@@ -790,7 +790,7 @@ func read_special_values{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_c
     - @external for writing -> @storage to write state, or use a generic helper function
     - @view for reading -> @storage to read state, or use a generic helper function
 
-```javascript
+```rust
 // Declare this file as a StarkNet contract.
 %lang starknet
 // Range check will ensure numbers stay within the felt range
@@ -865,7 +865,7 @@ func helper_3(a_b_data: dataStruct) -> (processed_data: felt) {
 
 **DESCRIPTION**
 
-```javascript
+```rust
 // Declare this file as a StarkNet contract.
 %lang starknet
 // Range check will ensure numbers stay within the felt range
@@ -1008,7 +1008,7 @@ func perform_function_total{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, rang
     - The end of the function is reaches
     - The result is returned to the calling function
 
-```javascript
+```rust
 // Declare this file as a StarkNet contract.
 %lang starknet
 
@@ -1048,7 +1048,7 @@ func get_sum(array: felt*, length: felt) -> (sum: felt) {
 
 ### **Custom Imports**
 
-```javascript
+```rust
 // Declare this file as a StarkNet contract.
 %lang starknet
 // Range check will ensure numbers stay within the felt range
@@ -1072,7 +1072,7 @@ func get_calculations{range_check_ptr}(first: felt, second: felt) -> (sum: felt,
 
 ### **Math Custom Import File**
 
-```javascript
+```rust
 %lang starknet
 // Function is from common library
 from starkware.cairo.common.math import unsigned_div_rem
@@ -1100,7 +1100,7 @@ func get_modulo{range_check_ptr}(a: felt, b: felt) -> (result: felt) {
 
 ### **Contract Calls A**
 
-```javascript
+```rust
 // Declare this file as a StarkNet contract.
 %lang starknet
 // Range check will ensure numbers stay within the felt range
@@ -1177,7 +1177,7 @@ func set_B_address{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_p
 
 ### **Contract Calls B**
 
-```javascript
+```rust
 // Declare this file as a StarkNet contract.
 %lang starknet
 // Range check will ensure numbers stay within the felt range
@@ -1264,7 +1264,7 @@ func increment{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
 - Signed division remainder : `signed_div_rem(value, div)` : Returns the quotient q and remainder r from the integer division of value/div, with quotient sign either positive or negative
     - Handles integer and modulo operations with negative numbers in the same way python does, where -100 // 3 = -43 & -100 % 3 = 2
 
-```javascript
+```rust
 // Declare this file as a StarkNet contract.
 %lang starknet
 // Range check will ensure numbers stay within the felt range
@@ -1386,7 +1386,7 @@ func check_values{range_check_ptr}(num_1: felt, num_2: felt) -> (
 - In range - `is_in_range(val, a, b)` - Checks if val larger than or equal to a and smaller than or equal to b
 - Less than or equal to for felts - `is_le_felt(a, b)` : Checks if a_high is less than b_high, obtained using split_felt(val)
 
-```javascript
+```rust
 // Declare this file as a StarkNet contract.
 %lang starknet
 // Range check will ensure numbers stay within the felt range
@@ -1442,7 +1442,7 @@ func check_values{range_check_ptr}(number: felt) -> (
 - The three implicit arguments are required for storage operations.
 - When returning function call values to a reference, ensure the reference is inside brackets.
 
-```javascript
+```rust
 // Declare this file as a StarkNet contract.
 %lang starknet
 // Range check will ensure numbers stay within the felt range
@@ -1485,7 +1485,7 @@ func decrement{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
 
 **DESCRIPTION**
 
-```javascript
+```rust
 // Declare this file as a StarkNet contract.
 %lang starknet
 // Range check will ensure numbers stay within the felt range
@@ -1541,7 +1541,7 @@ func check_wallet{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_pt
 - `bitwise_xor(x, y)` - the result of bitwise XOR operation on x and y
 - `bitwise_or(x, y)` - the result of bitwise OR operation on x and y
 
-```javascript
+```rust
 %builtins bitwise
 from starkware.cairo.common.cairo_builtins import BitwiseBuiltin
 from starkware.cairo.common.bitwise import bitwise_operations, bitwise_and, bitwise_xor, bitwise_or
@@ -1596,7 +1596,7 @@ func main{bitwise_ptr: BitwiseBuiltin*}() -> () {
 - `bitwise_xor(x, y)` - the result of bitwise XOR operation on x and y
 - `bitwise_or(x, y)` - the result of bitwise OR operation on x and y
 
-```javascript
+```rust
 %lang starknet
 %builtins bitwise
 
@@ -1655,7 +1655,7 @@ func check_bitwise{bitwise_ptr: BitwiseBuiltin*}() -> () {
 
 - This can be recieved by calling the L1 Starkent contract function `consumeMessageFromL2()` from the addressed specified in the `to_address` above containing the arguments `from_address` (L2 address) and `payload`.
 
-```javascript
+```rust
 // Declare this file as a StarkNet contract.
 %lang starknet
 // Range check will ensure numbers stay within the felt range
@@ -1693,7 +1693,7 @@ STEPS:
 - 2: SN contract on ETH : Verifies message validity -> StarkNet.sol contains function `consumeMessageFromL2()` -> computes the hash that ties the messages to both L1 and L2 contracts -> checks hash is stored as a fact, verified by STARK validity proof
 - 3: Custom contract on ETH : Digests message -> L1L2Example.sol contains `withdraw()` function. -> this calls `StarkNet.sol` and verifies that the payload is valid from the specified L2 address.
 
-```javascript
+```rust
 // Declare this file as a StarkNet contract.
 %lang starknet
 // Range check will ensure numbers stay within the felt range
@@ -1740,7 +1740,7 @@ func increase_L1_balance{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_c
 
 - The message originates on L1 with a call to Starknet contract function sendMessageToL2() with the arguments `to_address` (L2 address), `selector` and `payload`.
 
-```javascript
+```rust
 // Declare this file as a StarkNet contract.
 %lang starknet
 // Range check will ensure numbers stay within the felt range
@@ -1773,7 +1773,7 @@ func recieve{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
 
 **DESCRIPTION**
 
-```javascript
+```rust
 // Declare this file as a StarkNet contract.
 %lang starknet
 // Range check will ensure numbers stay within the felt range
@@ -1815,7 +1815,7 @@ func get_hash{pedersen_ptr: HashBuiltin*}(x, y) -> (hash: felt, hash_with_zero: 
 - `signature_r` : 1893532933103991730127061797833157421284043895315515223059211080812570729772
 - `signature_s` : 2767847065606260480373088228849935790434610797527549053315487023265903912514
 
-```javascript
+```rust
 // Declare this file as a StarkNet contract.
 %lang starknet
 // ecdsa is a builtin that tracks the signature in the cairo trace.
@@ -1843,7 +1843,7 @@ func check_signature{ecdsa_ptr: SignatureBuiltin*}(message_hash, public_key, sig
 - Values should be checked to ensure that they are within an acceptable boundary to ensure the protocol wont behave unexpectedly.
 - Although there are definitely cases where using zero or negative values is appropriate, developer discretion should be used.
 
-```javascript
+```rust
 @external
 func insecure_token_initializer{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
     _admin: felt,
@@ -1924,7 +1924,7 @@ func more_secure_token_initializer{syscall_ptr: felt*, pedersen_ptr: HashBuiltin
 - From the perspective of the contract, the syscall get_caller_address will always return zero.
 - This could result in broken access control checks or even sending tokens to a zero address, accidentally burning them from the supply.
 
-```javascript
+```rust
 @external
 func insecure_claim_tokens{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
     sender_address: felt
@@ -1964,7 +1964,7 @@ func more_secure_claim_tokens{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, ra
 - Ensure the Ethereum address is bound checked, as if a user enters an invalid Ethereum address it could cause unexpected behaviour to occur when communicating with Ethereum layer.
 - StarkNet addresses are of type felt, which is between the range of 0 < x < P (2^251 + 17 * 2^192 + 1), whereas L1 Ethereum addresses are of type uint160, which is less than the felt size.
 
-```javascript
+```rust
 @external
 func insecure_set_l1_bridge{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
     l1_bridge_address: felt
@@ -1999,7 +1999,7 @@ func more_secure_set_l1_bridge{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, r
 - This is because some tokens might not implement the same logic on transfer.
 - It is recommended to check the balance of the token before, and after the transfer to ensure that the amount transferred matches.
 
-```javascript
+```rust
 @external
 func insecure_pay_someone{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
     amount: Uint256, reciever: felt, token: felt
@@ -2037,7 +2037,7 @@ func more_secure_pay_someone{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, ran
 - This enables malicious actors to manipulate the contract logic for their own gain.
 - Code should always verify that any Uint256 arguments are valid Uint256, using the uint256_check,
 
-```javascript
+```rust
 @external
 func insecure_send_message{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
     message_data: Uint256
@@ -2080,7 +2080,7 @@ func more_secure_send_message{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, ra
 - Cairo has two different methods to check whether a value is less than or equal to the operator; 'assert_le' and 'assert_nn_le'. 'assert_le' verifies that a <= b regardless of the size of a. 'assert_nn_le' verifies that  0 <= a <= b.
 - This means 'assert_nn_le' will assert that a is non-negative as well (i.e. not greater than the RANGE_CHECK_BOUND of 2^128)
 
-```javascript
+```rust
 @storage_var
 func max_supply() -> (res: felt) {
 }
@@ -2120,7 +2120,7 @@ func better_comparison{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_che
 - This can also be seen in reverse, where multiplying two negative numbers may not result in a positve value.
 - The Uint256 module is also unchecked, meaning that over/underflows is still possible.
 
-```javascript
+```rust
 @external
 func overflow{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
     num1: felt, num2: felt
@@ -2194,7 +2194,7 @@ func multiplication_overflow_protection{
 - If the numbers do not match up perfectly, the result can be unexpected i.e. 30/9=1206167596222043737899107594365023368541035738443865566657697352045290673497.
 - This is because 120...97 * 9 = 30 (modulo the 252-bit Prime used by Cairo)
 
-```javascript
+```rust
 @external
 func bad_scale_down_tokens{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}() -> (
     scaled_down_balance: felt
@@ -2229,7 +2229,7 @@ func better_scale_down_tokens{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, ra
 - This could result in an owner or admin being set to a wrong address, and losing access to the protocol forever as it cannot be changed back.
 - An example of this check would be timelocks, set then confirm or set then claim.
 
-```javascript
+```rust
 @storage_var
 func owner() -> (res: felt) {
 }
@@ -2305,7 +2305,7 @@ func secure_clear_proposed_ownership{
 - After this, they can deploy the proxy contract and pass the implementation hash as a paramter.
 - If somebody initializes the implementation contract before the developer and the developer doesn't notice, this could allow malicious actors to initialize certain contracts and would be set as the admin.
 
-```javascript
+```rust
 // INSECURE
 @storage_var
 func Proxy_implementation_hash() -> (class_hash: felt) {
@@ -2361,7 +2361,7 @@ func set_proxy{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
 - When using the @view decorator, ensure that no state is modified, as this can be very dangerous.
 - Contrastingly, when using functions which modify state, ensure that the @external decorator is used.
 
-```javascript
+```rust
 @view
 func bad_fetch_nonce{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}() -> (
     nonce: felt
@@ -2393,7 +2393,7 @@ func better_fetch_nonce{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_ch
 - When importing modules with external functions, all will be automatically exposed. 
 - Generally, this is something you might want, although it is important to ensure that sensitive functions are not exposed.
 
-```javascript
+```rust
 // library.cairo
 %lang starknet
 from starkware.cairo.common.cairo_builtins import HashBuiltin
@@ -2446,7 +2446,7 @@ func check_owner_and_do_something{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*
 - This provides greater flexibility, but signature schemas need to be created carefully to avoid replay attacks and signature malleability.
 - To protect against this, it is suggested to use a unique nonce for each transfer.
 
-```javascript
+```rust
 // INSECURE
 
 @external

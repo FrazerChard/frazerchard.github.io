@@ -1435,10 +1435,8 @@ func decrement{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
     return ();
 }
 ```
-NOTES
-The three implicit arguments are required for storage operations
-When returning function call values to a reference, ensure the reference is inside brackets
-
+- The three implicit arguments are required for storage operations.
+- When returning function call values to a reference, ensure the reference is inside brackets.
 
 
 ### Currency
@@ -1753,13 +1751,12 @@ func get_hash{pedersen_ptr: HashBuiltin*}(x, y) -> (hash: felt, hash_with_zero: 
 Cairo has a bultin to perform ECDSA signature verification.
 Steps 1: Create a message to sign -> 2: hash message using pedersen function -> 3: obtain private key -> 4: sign message hash using priv key -> 5: record sig_r & sig_s
 
-Python script can be used to generate private key.
-In this case, we are using the hardcoded values.
+Python script can be used to generate private key but in this case, we are using the hardcoded values.
 
-message_hash ("13579") : 2255487090060981340412778270523682108366421523848318719210969003889439916982
-public_key : 336651705928807190204460653884405974785205047669862626875647782176669707088
-signature_r : 1893532933103991730127061797833157421284043895315515223059211080812570729772
-signature_s : 2767847065606260480373088228849935790434610797527549053315487023265903912514
+- message_hash ("13579") : 2255487090060981340412778270523682108366421523848318719210969003889439916982
+- public_key : 336651705928807190204460653884405974785205047669862626875647782176669707088
+- signature_r : 1893532933103991730127061797833157421284043895315515223059211080812570729772
+- signature_s : 2767847065606260480373088228849935790434610797527549053315487023265903912514
 
 ```javascript
 // Declare this file as a StarkNet contract.
@@ -1778,4 +1775,6 @@ func check_signature{ecdsa_ptr: SignatureBuiltin*}(message_hash, public_key, sig
     return ();
 }
 ```
+
+# Cairo Security By Example (v0.10.0)
 

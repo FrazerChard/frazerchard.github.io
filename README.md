@@ -10,7 +10,7 @@ This site is meant to provide some basic examples on some different functionalit
 
 ## Hello, World!
 
-```sh
+```javascript
 // Declare this file as a StarkNet contract.
 %lang starknet
 // Range check will ensure numbers stay within the felt range
@@ -31,7 +31,7 @@ func hello_world() -> (num_1: felt, num_2: felt) {
 
 ## Data Types
 
-```sh
+```javascript
 // Declare this file as a StarkNet contract.
 %lang starknet
 // Range check will ensure numbers stay within the felt range
@@ -61,7 +61,7 @@ func types(user_number: felt) -> (
 
 ## Read and Write
 
-```sh
+```javascript
 // Declare this file as a StarkNet contract.
 %lang starknet
 // Range check will ensure numbers stay within the felt range
@@ -93,7 +93,7 @@ func save{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(input
 
 ## Variables
 
-```sh
+```javascript
 // Declare this file as a StarkNet contract.
 %lang starknet
 // Range check will ensure numbers stay within the felt range
@@ -151,7 +151,7 @@ func use_variables{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_p
 
 ## Constructors
 
-```sh
+```javascript
 // Declare this file as a StarkNet contract.
 %lang starknet
 // Range check will ensure numbers stay within the felt range
@@ -200,7 +200,7 @@ func read_special_values{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_c
 -@view for reading -> @storage to read state, or use a generic helper function
 
 
-```sh
+```javascript
 // Declare this file as a StarkNet contract.
 %lang starknet
 // Range check will ensure numbers stay within the felt range
@@ -271,7 +271,7 @@ func helper_3(a_b_data: dataStruct) -> (processed_data: felt) {
 
 ## Data Locations
 
-```sh
+```javascript
 // Declare this file as a StarkNet contract.
 %lang starknet
 // Range check will ensure numbers stay within the felt range
@@ -325,9 +325,42 @@ func read_values{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr
 }
 ```
 
+## Pointers
+
+```javascript
+// Declare this file as a StarkNet contract.
+%lang starknet
+
+from starkware.cairo.common.registers import get_fp_and_pc
+
+// Pointers are used to communicate a data structure between functions.
+// Rather than passing a tuple, a function can pass a pointer to the start of the tuple in memory.
+@view
+func use_pointer(number: felt) -> (res: felt) {
+    // Variable 'tuple' is assigned to the pointer to the tuple, which is returned by the function.
+    // This variable is of type felt*.
+    let (tuple) = tuple_maker(number);
+    // The variable 'val' is set to the value of the third element
+    let val = tuple[2];
+    return (val,);
+}
+
+// This function returns a pointer to a tuple
+func tuple_maker(val: felt) -> (a_tuple: felt*) {
+    alloc_locals;
+    // Declare a tuple
+    local tuple: (felt, felt, felt) = (5, 6, 2 * val);
+    // Local variables are based on the frame pointer,
+    // which can be accessed using the following library
+    let (__fp__, _) = get_fp_and_pc();
+    // & denotes the address, in this case, the address of the tuple
+    return (&tuple,);
+}
+
+```
 ## Tuples
 
-```sh
+```javascript
 // Declare this file as a StarkNet contract.
 %lang starknet
 
@@ -366,9 +399,9 @@ func get_sum(tuple_ptr: felt*, idx_1: felt, idx_2: felt) -> (total: felt) {
 }
 ```
 
-## Read and Write Tuples
+### Read and Write Tuples
 
-```sh
+```javascript
 // Declare this file as a StarkNet contract.
 %lang starknet
 // Range check will ensure numbers stay within the felt range
@@ -411,7 +444,7 @@ func save{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
 Arrays are defined using a pointer to the first element of the array.
 Their values are addressed by their location in memory relative to the pointer
 
-```sh
+```javascript
 // Declare this file as a StarkNet contract.
 %lang starknet
 // Range check will ensure numbers stay within the felt range
@@ -439,9 +472,9 @@ func read_array{range_check_ptr}(index: felt) -> (value: felt) {
 }
 ```
 
-## Array Arguments
+### Array Arguments
 
-```sh
+```javascript
 // Declare this file as a StarkNet contract.
 %lang starknet
 // Range check will ensure numbers stay within the felt range
@@ -475,9 +508,9 @@ func save{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
 }
 ```
 
-## Array Returns
+### Array Returns
 
-```sh
+```javascript
 // Declare this file as a StarkNet contract.
 %lang starknet
 // Range check will ensure numbers stay within the felt range
@@ -514,7 +547,7 @@ func save{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
 
 ## Structs
 
-```sh
+```javascript
 // Declare this file as a StarkNet contract.
 %lang starknet
 // Range check will ensure numbers stay within the felt range
@@ -560,11 +593,11 @@ func register_user{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_p
 
 ```
 
-## Struct Returns
+### Struct Returns
 
-### Struct Returns User Database
+#### Struct Returns User Database
 
-```sh
+```javascript
 // Declare this file as a StarkNet contract.
 %lang starknet
 // Range check will ensure numbers stay within the felt range
@@ -614,9 +647,9 @@ func register_user{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_p
 
 ```
 
-### Struct Returns User Analyst
+#### Struct Returns User Analyst
 
-```sh
+```javascript
 // Declare this file as a StarkNet contract.
 %lang starknet
 // Range check will ensure numbers stay within the felt range
@@ -648,46 +681,11 @@ func score_user{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}
     let score = user.upvotes - user.downvotes;
     return (score,);
 }
-
-```
-
-## Pointers
-
-```sh
-// Declare this file as a StarkNet contract.
-%lang starknet
-
-from starkware.cairo.common.registers import get_fp_and_pc
-
-// Pointers are used to communicate a data structure between functions.
-// Rather than passing a tuple, a function can pass a pointer to the start of the tuple in memory.
-@view
-func use_pointer(number: felt) -> (res: felt) {
-    // Variable 'tuple' is assigned to the pointer to the tuple, which is returned by the function.
-    // This variable is of type felt*.
-    let (tuple) = tuple_maker(number);
-    // The variable 'val' is set to the value of the third element
-    let val = tuple[2];
-    return (val,);
-}
-
-// This function returns a pointer to a tuple
-func tuple_maker(val: felt) -> (a_tuple: felt*) {
-    alloc_locals;
-    // Declare a tuple
-    local tuple: (felt, felt, felt) = (5, 6, 2 * val);
-    // Local variables are based on the frame pointer,
-    // which can be accessed using the following library
-    let (__fp__, _) = get_fp_and_pc();
-    // & denotes the address, in this case, the address of the tuple
-    return (&tuple,);
-}
-
 ```
 
 ## Mappings
 
-```sh
+```javascript
 // Declare this file as a StarkNet contract.
 %lang starknet
 // Range check will ensure numbers stay within the felt range
@@ -747,7 +745,7 @@ func read_inventory{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_
 -Assign a value to a key dict_write()
 -Read the value of a key dict_read()
 
-```sh
+```javascript
 %lang starknet
 %builtins range_check
 
@@ -795,7 +793,7 @@ func get_value_of_key{range_check_ptr}(key_1: felt, key_2: felt, key_3: felt) ->
 
 ## Assert
 
-```sh
+```javascript
 // An assert statement can be used for two purposes
 // Checking the value of two variables are the same
 // Setting the value of a variable that currently has no value
@@ -826,62 +824,13 @@ func asserter(test_0: felt, test_1: felt) -> (val_1: felt, val_2: felt) {
     assert newRegistry.val_0 = newRegistry.val_1;
     return (newRegistry.val_0, newRegistry.val_1);
 }
-
 ```
 
-## Currency
+## Control Structures
 
-```sh
-// Declare this file as a StarkNet contract.
-%lang starknet
-// Range check will ensure numbers stay within the felt range
-// Pedersen will allow us to use the Pedersen hash function native to many operations
-%builtins pedersen range_check
+### If Else
 
-// The HashBuiltin type is required when passing a pedersen_ptr as an implicit argument
-from starkware.cairo.common.cairo_builtins import HashBuiltin
-
-// Creating a variable called stores user and balance to a felt
-@storage_var
-func wallet_balance(user: felt) -> (res: felt) {
-}
-
-@external
-func register_currency{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
-    user: felt, register_amount: felt
-) {
-    alloc_locals;
-    let (local balance) = wallet_balance.read(user);
-    wallet_balance.write(user, balance + register_amount);
-    return ();
-}
-
-@external
-func move_currency{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
-    from_user: felt, to_user: felt, move_amount: felt
-) {
-    alloc_locals;
-    let (local sender_balance) = wallet_balance.read(from_user);
-    let (local receiver_balance) = wallet_balance.read(to_user);
-    wallet_balance.write(to_user, receiver_balance + move_amount);
-    wallet_balance.write(from_user, sender_balance - move_amount);
-    return ();
-}
-
-@view
-func check_wallet{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(user: felt) -> (
-    balance: felt
-) {
-    alloc_locals;
-    let (local balance) = wallet_balance.read(user);
-    return (balance,);
-}
-
-```
-
-## If Else
-
-```sh
+```javascript
 // Declare this file as a StarkNet contract.
 %lang starknet
 // Range check will ensure numbers stay within the felt range
@@ -1011,10 +960,9 @@ func perform_function_total{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, rang
 
 ```
 
-## Recursive Loops
+### Recursive Loops
 
 Steps to Recursive Loops
-------------------------
 -Specify loop length
 -A looping function is called with a list of elements
 -It checks if the element if the final one, if not it increments and calls itself.
@@ -1024,7 +972,7 @@ Steps to Recursive Loops
 -The end of the function is reaches
 -The result is returned to the calling function
 
-```sh
+```javascript
 // Declare this file as a StarkNet contract.
 %lang starknet
 
@@ -1062,7 +1010,7 @@ func get_sum(array: felt*, length: felt) -> (sum: felt) {
 
 ### Custom Imports
 
-```sh
+```javascript
 // Declare this file as a StarkNet contract.
 %lang starknet
 // Range check will ensure numbers stay within the felt range
@@ -1086,7 +1034,7 @@ func get_calculations{range_check_ptr}(first: felt, second: felt) -> (sum: felt,
 
 ### Math Custom Import File
 
-```sh
+```javascript
 %lang starknet
 // Function is from common library
 from starkware.cairo.common.math import unsigned_div_rem
@@ -1112,7 +1060,7 @@ func get_modulo{range_check_ptr}(a: felt, b: felt) -> (result: felt) {
 
 ### Contract Calls A
 
-```sh
+```javascript
 // Declare this file as a StarkNet contract.
 %lang starknet
 // Range check will ensure numbers stay within the felt range
@@ -1189,7 +1137,7 @@ func set_B_address{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_p
 
 ### Contract Calls B
 
-```sh
+```javascript
 // Declare this file as a StarkNet contract.
 %lang starknet
 // Range check will ensure numbers stay within the felt range
@@ -1255,25 +1203,24 @@ func increment{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
 
 ## Math
 
-
--Not zero - assert_not_zero(val) : Asserts val is not zero.
--Not equal - assert_not_equal(a, b) : Asserts that a is not equal to b.
--Not negative - assert_nn(val) : Asserts that val is not negative.
--Less than or equal to - assert_le(a, b) : Asserts that a is less than or equal to b.
--Less than - assert_lt(a, b) : Asserts that a is less than b.
--Not negative and less than or equal to - assert_nn_le() : Asserts a is not negative and less than or equal to b
--In range - assert_in_range(val, a, b) : Asserts val is both greater than or equal to a, and less than b.
--250-bit - assert_250_bit(val) : Asserts that val is smaller than the maxiumum value in 250-bit space and non negative
--Split felt - split_felt(val) : Returns high and low of parts of val.
--Less than or equal to with split felt - assert_le_felt(a, b) : Asserts a is less than or equal to b using split felt method
--Less than with split felt - assert_lt_felt(a, b) : Asserts a is less than b using split felt method
--Absolute value - abs_value(val) : Returns val as positive value
--Sign - sign(val) : Returns one of -1, 0 or 1 for a val that is negative, zero or positive respectively.
--Unsigned division remainder : unsigned_div_rem(value, div) : Returns the quotient q and remainder r from the integer division of value/div as positive values
--Signed division remainder : signed_div_rem(value, div) : Returns the quotient q and remainder r from the integer division of value/div, with quotient sign either positive or negative
+-Not zero - `assert_not_zero(val)` : Asserts val is not zero.
+-Not equal - `assert_not_equal(a, b)` : Asserts that a is not equal to b.
+-Not negative - `assert_nn(val)` : Asserts that val is not negative.
+-Less than or equal to - `assert_le(a, b)` : Asserts that a is less than or equal to b.
+-Less than - `assert_lt(a, b)` : Asserts that a is less than b.
+-Not negative and less than or equal to - `assert_nn_le()` : Asserts a is not negative and less than or equal to b
+-In range - `assert_in_range(val, a, b)` : Asserts val is both greater than or equal to a, and less than b.
+-250-bit - `assert_250_bit(val)` : Asserts that val is smaller than the maxiumum value in 250-bit space and non negative
+-Split felt - `split_felt(val)` : Returns high and low of parts of val.
+-Less than or equal to with split felt - `assert_le_felt(a, b)` : Asserts a is less than or equal to b using split felt method
+-Less than with split felt - `assert_lt_felt(a, b)` : Asserts a is less than b using split felt method
+-Absolute value - `abs_value(val)` : Returns val as positive value
+-Sign - `sign(val)` : Returns one of -1, 0 or 1 for a val that is negative, zero or positive respectively.
+-Unsigned division remainder : `unsigned_div_rem(value, div)` : Returns the quotient q and remainder r from the integer division of value/div as positive values
+-Signed division remainder : `signed_div_rem(value, div)` : Returns the quotient q and remainder r from the integer division of value/div, with quotient sign either positive or negative
 -Handles integer and modulo operations with negative numbers in the same way python does, where -100 // 3 = -43 & -100 % 3 = 2
 
-```sh
+```javascript
 // Declare this file as a StarkNet contract.
 %lang starknet
 // Range check will ensure numbers stay within the felt range
@@ -1384,16 +1331,16 @@ func check_values{range_check_ptr}(num_1: felt, num_2: felt) -> (
 
 ```
 
-## Math Comparison
+### Math Comparison
 
--Not Zero - is_not_zero(val) : Checks if val is not zero
--Not Negative - is_nn(val) : Checks if val is not negative
--Not Negative and less than or equal to - is_nn_le(val) : Checks if val is not negative and is less than or equal to a
--Less than or equal to - is_le(val, a) : Checks if val less than or equal to a
--In range - is_in_range(val, a, b) - Checks if val larger than or equal to a and smaller than or equal to b
--Less than or equal to for felts - is_le_felt(a, b) : Checks if a_high is less than b_high, obtained using split_felt(val)
+-Not Zero - `is_not_zero(val)` : Checks if val is not zero
+-Not Negative - `is_nn(val)` : Checks if val is not negative
+-Not Negative and less than or equal to - `is_nn_le(val)` : Checks if val is not negative and is less than or equal to a
+-Less than or equal to - `is_le(val, a)` : Checks if val less than or equal to a
+-In range - `is_in_range(val, a, b)` - Checks if val larger than or equal to a and smaller than or equal to b
+-Less than or equal to for felts - `is_le_felt(a, b)` : Checks if a_high is less than b_high, obtained using split_felt(val)
 
-```sh
+```javascript
 // Declare this file as a StarkNet contract.
 %lang starknet
 // Range check will ensure numbers stay within the felt range
@@ -1442,9 +1389,9 @@ func check_values{range_check_ptr}(number: felt) -> (
 }
 ```
 
-## Counter
+### Counter
 
-```sh
+```javascript
 // Declare this file as a StarkNet contract.
 %lang starknet
 // Range check will ensure numbers stay within the felt range
@@ -1488,13 +1435,65 @@ When returning function call values to a reference, ensure the reference is insi
 
 
 
-## Bitwise Operations
+### Currency
+
+```javascript
+// Declare this file as a StarkNet contract.
+%lang starknet
+// Range check will ensure numbers stay within the felt range
+// Pedersen will allow us to use the Pedersen hash function native to many operations
+%builtins pedersen range_check
+
+// The HashBuiltin type is required when passing a pedersen_ptr as an implicit argument
+from starkware.cairo.common.cairo_builtins import HashBuiltin
+
+// Creating a variable called stores user and balance to a felt
+@storage_var
+func wallet_balance(user: felt) -> (res: felt) {
+}
+
+@external
+func register_currency{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
+    user: felt, register_amount: felt
+) {
+    alloc_locals;
+    let (local balance) = wallet_balance.read(user);
+    wallet_balance.write(user, balance + register_amount);
+    return ();
+}
+
+@external
+func move_currency{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
+    from_user: felt, to_user: felt, move_amount: felt
+) {
+    alloc_locals;
+    let (local sender_balance) = wallet_balance.read(from_user);
+    let (local receiver_balance) = wallet_balance.read(to_user);
+    wallet_balance.write(to_user, receiver_balance + move_amount);
+    wallet_balance.write(from_user, sender_balance - move_amount);
+    return ();
+}
+
+@view
+func check_wallet{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(user: felt) -> (
+    balance: felt
+) {
+    alloc_locals;
+    let (local balance) = wallet_balance.read(user);
+    return (balance,);
+}
+
+```
+
+## Bitwise
+
+### Bitwise Operations
 
 -`bitwise_and(x, y)` - the result of bitwise AND operation on x and y
 -`bitwise_xor(x, y)` - the result of bitwise XOR operation on x and y
 -`bitwise_or(x, y)` - the result of bitwise OR operation on x and y
 
-```sh
+```javascript
 %builtins bitwise
 from starkware.cairo.common.cairo_builtins import BitwiseBuiltin
 from starkware.cairo.common.bitwise import bitwise_operations, bitwise_and, bitwise_xor, bitwise_or
@@ -1542,13 +1541,13 @@ func main{bitwise_ptr: BitwiseBuiltin*}() -> () {
 
 ```
 
-## Bitwise Starknet
+### Bitwise Starknet
 
 -`bitwise_and(x, y)` - the result of bitwise AND operation on x and y
 -`bitwise_xor(x, y)` - the result of bitwise XOR operation on x and y
 -`bitwise_or(x, y)` - the result of bitwise OR operation on x and y
 
-```sh
+```javascript
 %lang starknet
 %builtins bitwise
 
@@ -1606,7 +1605,7 @@ Starknet contract can message L1 using the send_message_to_L1() function contain
 
 This can be recieved by calling the L1 Starkent contract function 'consumeMessageFromL2()' from the addressed specified in the 'to_address' above containing the arguments 'from_address' (L2 address) and 'payload'
 
-```sh
+```javascript
 // Declare this file as a StarkNet contract.
 %lang starknet
 // Range check will ensure numbers stay within the felt range
@@ -1647,7 +1646,7 @@ Verifies message validity -> StarkNet.sol contains function 'consumeMessageFromL
 Digests message -> L1L2Example.sol contains 'withdraw()' function. -> this calls
 'StarkNet.sol' and verifies that the payload is valid from the specified L2 address
 
-```sh
+```javascript
 // Declare this file as a StarkNet contract.
 %lang starknet
 // Range check will ensure numbers stay within the felt range
@@ -1689,11 +1688,11 @@ func increase_L1_balance{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_c
 ### Recieve Message
 
 StarkNet contract can receive an L1 message using the @l1_handler
-The recieving function is 'actioned' by the Starknet sequencer and then recieves the arguments 'from_address' (l1 contract address thag sent the message) and message elements as type felt.
+The recieving function is 'actioned' by the Starknet sequencer and then recieves the arguments `from_address` (l1 contract address thag sent the message) and message elements as type felt.
 
-The message originates on L1 with a call to Starknet contra t function sendMessageToL2() with the arguments 'to_address' (L2 address), 'selector' and 'payload'.
+The message originates on L1 with a call to Starknet contract function sendMessageToL2() with the arguments `to_address` (L2 address), `selector` and `payload`.
 
-```sh
+```javascript
 // Declare this file as a StarkNet contract.
 %lang starknet
 // Range check will ensure numbers stay within the felt range
@@ -1720,9 +1719,11 @@ func recieve{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
 }
 ```
 
-## Pedersen Hash
+## Cryptography
 
-```sh
+### Pedersen Hash
+
+```javascript
 // Declare this file as a StarkNet contract.
 %lang starknet
 // Range check will ensure numbers stay within the felt range
@@ -1746,7 +1747,7 @@ func get_hash{pedersen_ptr: HashBuiltin*}(x, y) -> (hash: felt, hash_with_zero: 
 }
 ```
 
-## Verify ECDSA
+### Verify ECDSA
 
 Cairo has a bultin to perform ECDSA signature verification.
 Steps 1: Create a message to sign -> 2: hash message using pedersen function -> 3: obtain private key -> 4: sign message hash using priv key -> 5: record sig_r & sig_s
@@ -1759,7 +1760,7 @@ public_key : 3366517059288071902044606538844059747852050476698626268756477821766
 signature_r : 1893532933103991730127061797833157421284043895315515223059211080812570729772
 signature_s : 2767847065606260480373088228849935790434610797527549053315487023265903912514
 
-```sh
+```javascript
 // Declare this file as a StarkNet contract.
 %lang starknet
 // ecdsa is a builtin that tracks the signature in the cairo trace.

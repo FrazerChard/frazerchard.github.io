@@ -8,9 +8,9 @@ This site is meant to provide some basic examples on some different functionalit
 
 # **Cairo By Example (v0.10.0)**
 
-## Hello, World!
+## **Hello, World!**
 
-*DESCRIPTION*
+**DESCRIPTION**
 
 ```javascript
 // Declare this file as a StarkNet contract.
@@ -33,7 +33,7 @@ func hello_world() -> (num_1: felt, num_2: felt) {
 
 ## Data Types
 
-*DESCRIPTION*
+**DESCRIPTION**
 
 ```javascript
 // Declare this file as a StarkNet contract.
@@ -64,7 +64,7 @@ func types(user_number: felt) -> (
 ```
 ### Variables
 
-*DESCRIPTION*
+**DESCRIPTION**
 
 ```javascript
 // Declare this file as a StarkNet contract.
@@ -123,7 +123,7 @@ func use_variables{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_p
 ```
 ### Read and Write
 
-*DESCRIPTION*
+**DESCRIPTION**
 
 ```javascript
 // Declare this file as a StarkNet contract.
@@ -157,7 +157,7 @@ func save{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(input
 
 ### Assert
 
-*DESCRIPTION*
+**DESCRIPTION**
 
 ```javascript
 // An assert statement can be used for two purposes
@@ -194,7 +194,7 @@ func asserter(test_0: felt, test_1: felt) -> (val_1: felt, val_2: felt) {
 
 ## Data Locations
 
-*DESCRIPTION*
+**DESCRIPTION**
 
 ```javascript
 // Declare this file as a StarkNet contract.
@@ -252,7 +252,7 @@ func read_values{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr
 
 ### Pointers
 
-*DESCRIPTION*
+**DESCRIPTION**
 
 ```javascript
 // Declare this file as a StarkNet contract.
@@ -288,7 +288,7 @@ func tuple_maker(val: felt) -> (a_tuple: felt*) {
 
 ## Tuples
 
-*DESCRIPTION*
+**DESCRIPTION**
 
 ```javascript
 // Declare this file as a StarkNet contract.
@@ -331,7 +331,7 @@ func get_sum(tuple_ptr: felt*, idx_1: felt, idx_2: felt) -> (total: felt) {
 
 ### Read and Write Tuples
 
-*DESCRIPTION*
+**DESCRIPTION**
 
 ```javascript
 // Declare this file as a StarkNet contract.
@@ -373,7 +373,7 @@ func save{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
 
 ## Arrays
 
-*DESCRIPTION*
+**DESCRIPTION**
 Arrays are defined using a pointer to the first element of the array.
 Their values are addressed by their location in memory relative to the pointer
 
@@ -407,7 +407,7 @@ func read_array{range_check_ptr}(index: felt) -> (value: felt) {
 
 ### Array Arguments
 
-*DESCRIPTION*
+**DESCRIPTION**
 
 ```javascript
 // Declare this file as a StarkNet contract.
@@ -445,7 +445,7 @@ func save{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
 
 ### Array Returns
 
-*DESCRIPTION*
+**DESCRIPTION**
 
 ```javascript
 // Declare this file as a StarkNet contract.
@@ -484,7 +484,7 @@ func save{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
 
 ## Structs
 
-*DESCRIPTION*
+**DESCRIPTION**
 
 ```javascript
 // Declare this file as a StarkNet contract.
@@ -534,7 +534,7 @@ func register_user{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_p
 
 ### Struct Returns
 
-*DESCRIPTION*
+**DESCRIPTION**
 
 #### Struct Returns User Database
 
@@ -626,7 +626,7 @@ func score_user{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}
 
 ## Mappings
 
-*DESCRIPTION*
+**DESCRIPTION**
 
 ```javascript
 // Declare this file as a StarkNet contract.
@@ -683,7 +683,7 @@ func read_inventory{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_
 
 ## Dictionaries
 
-*DESCRIPTION*
+**DESCRIPTION**
 - Get a pointer to a new dictionary with `default_dict_new()`
 - Assert its integrity with `default_dict_finalize()`
 - Assign a value to a key `dict_write()`
@@ -739,7 +739,7 @@ func get_value_of_key{range_check_ptr}(key_1: felt, key_2: felt, key_3: felt) ->
 
 ### Constructors
 
-*DESCRIPTION*
+**DESCRIPTION**
 
 ```javascript
 // Declare this file as a StarkNet contract.
@@ -782,7 +782,7 @@ func read_special_values{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_c
 
 ### Function Visibility
 
-*DESCRIPTION*
+**DESCRIPTION**
 - Functions with a decorator (@view, @external @storage) only handles felt type arguments
 - Generic helper functions can be used to handle arguments other than felt
 
@@ -863,7 +863,7 @@ func helper_3(a_b_data: dataStruct) -> (processed_data: felt) {
 
 ### If Else
 
-*DESCRIPTION*
+**DESCRIPTION**
 
 ```javascript
 // Declare this file as a StarkNet contract.
@@ -997,7 +997,7 @@ func perform_function_total{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, rang
 
 ### Recursive Loops
 
-*DESCRIPTION*
+**DESCRIPTION**
 Steps to Recursive Loops
 - Specify loop length
 - A looping function is called with a list of elements
@@ -1044,7 +1044,7 @@ func get_sum(array: felt*, length: felt) -> (sum: felt) {
 
 ## Imports
 
-*DESCRIPTION*
+**DESCRIPTION**
 
 ### Custom Imports
 
@@ -1096,7 +1096,7 @@ func get_modulo{range_check_ptr}(a: felt, b: felt) -> (result: felt) {
 
 ## Interfaces
 
-*DESCRIPTION*
+**DESCRIPTION**
 
 ### Contract Calls A
 
@@ -1245,7 +1245,7 @@ func increment{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
 
 ### Basic Math
 
-*DESCRIPTION*
+**DESCRIPTION**
 
 
 - Not zero - `assert_not_zero(val)` : Asserts val is not zero.
@@ -1378,7 +1378,7 @@ func check_values{range_check_ptr}(num_1: felt, num_2: felt) -> (
 
 ### Math Comparison
 
-*DESCRIPTION*
+**DESCRIPTION**
 
 - Not Zero - `is_not_zero(val)` : Checks if val is not zero
 - Not Negative - `is_nn(val)` : Checks if val is not negative
@@ -1438,7 +1438,7 @@ func check_values{range_check_ptr}(number: felt) -> (
 
 ### Counter
 
-*DESCRIPTION*
+**DESCRIPTION**
 
 - The three implicit arguments are required for storage operations.
 - When returning function call values to a reference, ensure the reference is inside brackets.
@@ -1484,7 +1484,7 @@ func decrement{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
 
 ### Currency
 
-*DESCRIPTION*
+**DESCRIPTION**
 
 ```javascript
 // Declare this file as a StarkNet contract.
@@ -1536,7 +1536,7 @@ func check_wallet{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_pt
 
 ### Bitwise Operations
 
-*DESCRIPTION*
+**DESCRIPTION**
 -`bitwise_and(x, y)` - the result of bitwise AND operation on x and y
 -`bitwise_xor(x, y)` - the result of bitwise XOR operation on x and y
 -`bitwise_or(x, y)` - the result of bitwise OR operation on x and y
@@ -1591,7 +1591,7 @@ func main{bitwise_ptr: BitwiseBuiltin*}() -> () {
 
 ### Bitwise Starknet
 
-*DESCRIPTION*
+**DESCRIPTION**
 -`bitwise_and(x, y)` - the result of bitwise AND operation on x and y
 -`bitwise_xor(x, y)` - the result of bitwise XOR operation on x and y
 -`bitwise_or(x, y)` - the result of bitwise OR operation on x and y
@@ -1650,7 +1650,7 @@ func check_bitwise{bitwise_ptr: BitwiseBuiltin*}() -> () {
 
 ### Generate Message
 
-*DESCRIPTION*
+**DESCRIPTION**
 Starknet contract can message L1 using the send_message_to_L1() function containing the arguments `to_address`, `payload_size` and `payload`.
 
 This can be recieved by calling the L1 Starkent contract function `consumeMessageFromL2()` from the addressed specified in the `to_address` above containing the arguments `from_address` (L2 address) and `payload`.
@@ -1684,7 +1684,7 @@ func generate{syscall_ptr: felt*, range_check_ptr}() {
 
 ### Send Message to L1
 
-*DESCRIPTION*
+**DESCRIPTION**
 StarkNet (SN) contract can specify a message for an L1 Ethereum (ETH) contract to recieve.
 Three steps to this - generate, verify and digest
 STEPS:
@@ -1733,7 +1733,7 @@ func increase_L1_balance{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_c
 
 ### Recieve Message
 
-*DESCRIPTION*
+**DESCRIPTION**
 StarkNet contract can receive an L1 message using the @l1_handler
 The recieving function is 'actioned' by the Starknet sequencer and then recieves the arguments `from_address` (l1 contract address thag sent the message) and message elements as type felt.
 
@@ -1770,7 +1770,7 @@ func recieve{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
 
 ### Pedersen Hash
 
-*DESCRIPTION*
+**DESCRIPTION**
 
 ```javascript
 // Declare this file as a StarkNet contract.
@@ -1798,7 +1798,7 @@ func get_hash{pedersen_ptr: HashBuiltin*}(x, y) -> (hash: felt, hash_with_zero: 
 
 ### Verify ECDSA
 
-*DESCRIPTION*
+**DESCRIPTION**
 Cairo has a bultin to perform ECDSA signature verification.
 STEPS:
 - 1: Create a message to sign
@@ -1836,7 +1836,7 @@ func check_signature{ecdsa_ptr: SignatureBuiltin*}(message_hash, public_key, sig
 
 ## Missing Input Validation
 
-*DESCRIPTION*
+**DESCRIPTION**
 - In StarkNet, it is important to ensure that any user input from external functions are validated correctly.
 - This includes checking that all types, which includes felt values and uint256 values, are within the allowed range.
 - Values should be checked to ensure that they are within an acceptable boundary to ensure the protocol wont behave unexpectedly.
@@ -1915,7 +1915,7 @@ func more_secure_token_initializer{syscall_ptr: felt*, pedersen_ptr: HashBuiltin
 
 ## Account Abstraction Missing Zero Address Checks
 
-*DESCRIPTION*
+**DESCRIPTION**
 - In StarkNet, the account abstraction model differs from the Solidity account model.
 - There are no EOA accounts in StarkNet, which means that all addresses are contract addresses.
 - Generally, when implementing a StarkNet account, users will deploy a contract that authenticates the user and makes calls on the users behalf.
@@ -1958,7 +1958,7 @@ func more_secure_claim_tokens{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, ra
 
 ## Lack of Address Sanity Checks
 
-*DESCRIPTION*
+**DESCRIPTION**
 - When inputting Ethereum addresses into Starknet for L1-L2 communication, you must validate the Ethereum address entered into Starknet DApp.
 - Ensure the Ethereum address is bound checked, as if a user enters an invalid Ethereum address it could cause unexpected behaviour to occur when communicating with Ethereum layer.
 - StarkNet addresses are of type felt, which is between the range of 0 < x < P (2^251 + 17 * 2^192 + 1), whereas L1 Ethereum addresses are of type uint160, which is less than the felt size.
@@ -1993,7 +1993,7 @@ func more_secure_set_l1_bridge{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, r
 
 ## Interacting with Arbitrary Tokens
 
-*DESCRIPTION*
+**DESCRIPTION**
 - When interacting with arbitrary tokens, it is essential to ensure that each transfer is validated with balance checks.
 - This is because some tokens might not implement the same logic on transfer.
 - It is recommended to check the balance of the token before, and after the transfer to ensure that the amount transferred matches.
@@ -2030,7 +2030,7 @@ func more_secure_pay_someone{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, ran
 
 ## Uint256 Checks
 
-*DESCRIPTION*
+**DESCRIPTION**
 - Uint256 values are made up from two felt, which should contain 128-bits each.
 - This means that it is possible to control both the lower and upper portions of a Uint256.
 - This enables malicious actors to manipulate the contract logic for their own gain.
@@ -2075,7 +2075,7 @@ func more_secure_send_message{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, ra
 
 ## Incorrect Felt Comparison
 
-*DESCRIPTION*
+**DESCRIPTION**
 - Cairo has two different methods to check whether a value is less than or equal to the operator; 'assert_le' and 'assert_nn_le'. 'assert_le' verifies that a <= b regardless of the size of a. 'assert_nn_le' verifies that  0 <= a <= b.
 - This means 'assert_nn_le' will assert that a is non-negative as well (i.e. not greater than the RANGE_CHECK_BOUND of 2^128)
 
@@ -2111,7 +2111,7 @@ func better_comparison{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_che
 
 ## Arithmetic Overflow
 
-*DESCRIPTION*
+**DESCRIPTION**
 - The default primitive type, field element (felt), behvaes like an integer in many aspects but also has some important differnces.
 - The range of valid felts is (-P/2, P/2), where P is the 252-bit prime number used by Cairo.
 - Felt arithmetic is unchecked for underflow/overflow and this can lead to unexpected results.
@@ -2185,7 +2185,7 @@ func multiplication_overflow_protection{
 
 ## Arithmetic Division
 
-*DESCRIPTION*
+**DESCRIPTION**
 - Cairo math is performed over a finite field, hence the numeric type is called a felt (field element).
 - Apart from overflows/underflows, addition, multiplication and subtraction will generally behave as expected in Cairo.
 - In Cairo, it is more intuitive to think of division as the inverse of multiplication.
@@ -2222,7 +2222,7 @@ func better_scale_down_tokens{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, ra
 
 ## Transfer of Important Variables
 
-*DESCRIPTION*
+**DESCRIPTION**
 - When changing the values of important variables, such as ownership or admin variables, it is easy to accidentally input an incorrect value.
 - There some be some form of check, which would ensure that any incorrect values won't immediately be live on the protocol.
 - This could result in an owner or admin being set to a wrong address, and losing access to the protocol forever as it cannot be changed back.
@@ -2296,7 +2296,7 @@ func secure_clear_proposed_ownership{
 
 ## Multiple Contract Initializations
 
-*DESCRIPTION*
+**DESCRIPTION**
 - When creating an upgradable contract, we want to make sure that the implementation contracts are protected.
 - Implementation contracts should be initialized by contract developers and sensitive functions should have access control.
 - The Proxy preset includes a fallback, an L1 handler and a constructor.
@@ -2356,7 +2356,7 @@ func set_proxy{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
 
 ## Insecure State Modifications
 
-*DESCRIPTION*
+**DESCRIPTION**
 - When using the @view decorator, ensure that no state is modified, as this can be very dangerous.
 - Contrastingly, when using functions which modify state, ensure that the @external decorator is used.
 
@@ -2388,7 +2388,7 @@ func better_fetch_nonce{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_ch
 
 ## Exposing Unwanted External Functions
 
-*DESCRIPTION*
+**DESCRIPTION**
 - When importing modules with external functions, all will be automatically exposed. 
 - Generally, this is something you might want, although it is important to ensure that sensitive functions are not exposed.
 
@@ -2440,7 +2440,7 @@ func check_owner_and_do_something{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*
 
 ## Signature Replay Protection
 
-*DESCRIPTION*
+**DESCRIPTION**
 - The StarkNet account abstraction model allows many authentication details to be offloaded to contracts.
 - This provides greater flexibility, but signature schemas need to be created carefully to avoid replay attacks and signature malleability.
 - To protect against this, it is suggested to use a unique nonce for each transfer.
@@ -2518,28 +2518,28 @@ func more_secure_swap_currency{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, r
 ## Best Practices
 
 ### State is initialized to 0
-*DESCRIPTION*
+**DESCRIPTION**
 - State will always be initialized to 0, which can lead to vulnerabilities.
 - This can mean that checks where the value is set to 0 will automatically pass, even when it is not intended to.
 
 ### Failing Asserts Without with_attr
-*DESCRIPTION*
+**DESCRIPTION**
 - All asserts that can fail should have a with_attr to allow an error message that indicates the reason for the assert failing.
 - This allows for easier debugging of the code.
 
 ### Missing Use of Boolean Library
-*DESCRIPTION*
+**DESCRIPTION**
 - If the values 0 and 1 are being used to represent boolean values, the boolean library should be used to imporve readability.
 
 ### Missing Event Emission
-*DESCRIPTION*
+**DESCRIPTION**
 - Events should be emitted for all important state changes, such as owner/admin addresses, token address and state initialization.
 
 ### Testing Related Functions inside Core Contract
-*DESCRIPTION*
+**DESCRIPTION**
 - Contracts being deployed to the mainnet should only contaun functions needed for the protocol to function.
 - Testing related functions should be seperated from the main protocol logic.
 
 ### Comments Not Reflecting Code
-*DESCRIPTION*
+**DESCRIPTION**
 - Make sure that all comments within the code explain exactly what is actually happening in the code.

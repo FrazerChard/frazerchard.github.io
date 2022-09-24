@@ -360,137 +360,6 @@ func get_value_of_key{range_check_ptr}(key_1: felt, key_2: felt, key_3: felt) ->
     return (val_1, val_2, val_3);
 }
 ```
-## **Returning Data Structures**
-
-### **Array Returns**
-
-**DESCRIPTION**
-
-```rust
-// Declare this file as a StarkNet contract.
-%lang starknet
-// Range check will ensure numbers stay within the felt range
-// Pedersen will allow us to use the Pedersen hash function native to many operations
-%builtins pedersen range_check
-
-// The HashBuiltin type is required when passing a pedersen_ptr as an implicit argument
-from starkware.cairo.common.cairo_builtins import HashBuiltin
-
-@storage_var
-func stored_number() -> (res: felt) {
-}
-
-// Function to get the stored value
-@view
-func get{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}() -> (stored: felt) {
-    let (stored) = stored_number.read();
-    return (stored,);
-}
-
-// Function to accept an array
-@external
-func save{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
-    input_array_len: felt, input_array: felt*
-) {
-    let first = input_array[0];
-    let last = input_array[input_array_len - 1];
-    let solution = first * 10 - last * 2;
-    stored_number.write(solution);
-    return ();
-}
-```
-
-### **Struct Returns**
-
-**DESCRIPTION**
-
-#### **Struct Returns User Database**
-
-```rust
-// Declare this file as a StarkNet contract.
-%lang starknet
-// Range check will ensure numbers stay within the felt range
-// Pedersen will allow us to use the Pedersen hash function native to many operations
-%builtins pedersen range_check
-
-// The HashBuiltin type is required when passing a pedersen_ptr as an implicit argument
-from starkware.cairo.common.cairo_builtins import HashBuiltin
-
-struct User {
-    upvotes: felt,
-    downvotes: felt,
-    rank: felt,
-}
-@storage_var
-func user_upvotes(user_id: felt) -> (count: felt) {
-}
-
-@storage_var
-func user_downvotes(user_id) -> (count: felt) {
-}
-
-@storage_var
-func user_rank(user_id) -> (count: felt) {
-}
-
-@external
-func query_user{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(user_id: felt) -> (
-    user_stats: User
-) {
-    let (up) = user_upvotes.read(user_id);
-    let (down) = user_downvotes.read(user_id);
-    let (rank) = user_rank.read(user_id);
-    let user_stats = User(upvotes=up, downvotes=down, rank=rank);
-    return (user_stats,);
-}
-
-@external
-func register_user{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
-    user_id: felt, upvotes: felt, downvotes: felt, rank: felt
-) {
-    user_upvotes.write(user_id, upvotes);
-    user_downvotes.write(user_id, downvotes);
-    user_rank.write(user_id, rank);
-    return ();
-}
-
-```
-
-#### **Struct Returns User Analyst**
-
-```rust
-// Declare this file as a StarkNet contract.
-%lang starknet
-// Range check will ensure numbers stay within the felt range
-// Pedersen will allow us to use the Pedersen hash function native to many operations
-%builtins pedersen range_check
-
-// The HashBuiltin type is required when passing a pedersen_ptr as an implicit argument
-from starkware.cairo.common.cairo_builtins import HashBuiltin
-
-// The struct being received is also defined in the contract
-struct User {
-    upvotes: felt,
-    downvotes: felt,
-    rank: felt,
-}
-
-// The interface for the other function
-@contract_interface
-namespace IUserDatabase {
-    func query_user(user_id: felt) -> (user_stats: User) {
-    }
-}
-
-@external
-func score_user{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
-    database_address: felt, user_id: felt
-) -> (user_score: felt) {
-    let (user: User) = IUserDatabase.query_user(database_address, user_id);
-    let score = user.upvotes - user.downvotes;
-    return (score,);
-}
-```
 
 ## **Setters and Getters**
 
@@ -642,6 +511,98 @@ func save{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
     let solution = first * 10 - last * 2;
     stored_number.write(solution);
     return ();
+}
+```
+
+### **Read and Write Struct**
+
+**DESCRIPTION**
+
+```rust
+//struct_returns_user_database.cairo
+
+// Declare this file as a StarkNet contract.
+%lang starknet
+// Range check will ensure numbers stay within the felt range
+// Pedersen will allow us to use the Pedersen hash function native to many operations
+%builtins pedersen range_check
+
+// The HashBuiltin type is required when passing a pedersen_ptr as an implicit argument
+from starkware.cairo.common.cairo_builtins import HashBuiltin
+
+struct User {
+    upvotes: felt,
+    downvotes: felt,
+    rank: felt,
+}
+@storage_var
+func user_upvotes(user_id: felt) -> (count: felt) {
+}
+
+@storage_var
+func user_downvotes(user_id) -> (count: felt) {
+}
+
+@storage_var
+func user_rank(user_id) -> (count: felt) {
+}
+
+@external
+func query_user{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(user_id: felt) -> (
+    user_stats: User
+) {
+    let (up) = user_upvotes.read(user_id);
+    let (down) = user_downvotes.read(user_id);
+    let (rank) = user_rank.read(user_id);
+    let user_stats = User(upvotes=up, downvotes=down, rank=rank);
+    return (user_stats,);
+}
+
+@external
+func register_user{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
+    user_id: felt, upvotes: felt, downvotes: felt, rank: felt
+) {
+    user_upvotes.write(user_id, upvotes);
+    user_downvotes.write(user_id, downvotes);
+    user_rank.write(user_id, rank);
+    return ();
+}
+
+```
+
+```rust
+//struct_returns_user_analyst.cairo
+
+// Declare this file as a StarkNet contract.
+%lang starknet
+// Range check will ensure numbers stay within the felt range
+// Pedersen will allow us to use the Pedersen hash function native to many operations
+%builtins pedersen range_check
+
+// The HashBuiltin type is required when passing a pedersen_ptr as an implicit argument
+from starkware.cairo.common.cairo_builtins import HashBuiltin
+
+// The struct being received is also defined in the contract
+struct User {
+    upvotes: felt,
+    downvotes: felt,
+    rank: felt,
+}
+
+// The interface for the other function
+@contract_interface
+namespace IUserDatabase {
+    func query_user(user_id: felt) -> (user_stats: User) {
+    }
+}
+
+@external
+func score_user{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
+    database_address: felt, user_id: felt
+) -> (user_score: felt) {
+    let (user: User) = IUserDatabase.query_user(database_address, user_id);
+    let score = user.upvotes - user.downvotes;
+    return (score,);
 }
 ```
 

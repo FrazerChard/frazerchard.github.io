@@ -201,44 +201,6 @@ func read_array{range_check_ptr}(index: felt) -> (value: felt) {
 }
 ```
 
-### **Array Arguments**
-
-**DESCRIPTION**
-
-```rust
-// Declare this file as a StarkNet contract.
-%lang starknet
-// Range check will ensure numbers stay within the felt range
-// Pedersen will allow us to use the Pedersen hash function native to many operations
-%builtins pedersen range_check
-
-// The HashBuiltin type is required when passing a pedersen_ptr as an implicit argument
-from starkware.cairo.common.cairo_builtins import HashBuiltin
-
-@storage_var
-func stored_number() -> (res: felt) {
-}
-
-// Function to get the stored value
-@view
-func get{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}() -> (stored: felt) {
-    let (stored) = stored_number.read();
-    return (stored,);
-}
-
-// Function to accept an array
-@external
-func save{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
-    input_array_len: felt, input_array: felt*
-) {
-    let first = input_array[0];
-    let last = input_array[input_array_len - 1];
-    let solution = first * 10 - last * 2;
-    stored_number.write(solution);
-    return ();
-}
-```
-
 ### **Structs**
 
 **DESCRIPTION**
@@ -400,6 +362,44 @@ func get_value_of_key{range_check_ptr}(key_1: felt, key_2: felt, key_3: felt) ->
 ```
 ## **Returning Data Structures**
 
+### **Array Returns**
+
+**DESCRIPTION**
+
+```rust
+// Declare this file as a StarkNet contract.
+%lang starknet
+// Range check will ensure numbers stay within the felt range
+// Pedersen will allow us to use the Pedersen hash function native to many operations
+%builtins pedersen range_check
+
+// The HashBuiltin type is required when passing a pedersen_ptr as an implicit argument
+from starkware.cairo.common.cairo_builtins import HashBuiltin
+
+@storage_var
+func stored_number() -> (res: felt) {
+}
+
+// Function to get the stored value
+@view
+func get{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}() -> (stored: felt) {
+    let (stored) = stored_number.read();
+    return (stored,);
+}
+
+// Function to accept an array
+@external
+func save{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
+    input_array_len: felt, input_array: felt*
+) {
+    let first = input_array[0];
+    let last = input_array[input_array_len - 1];
+    let solution = first * 10 - last * 2;
+    stored_number.write(solution);
+    return ();
+}
+```
+
 ### **Struct Returns**
 
 **DESCRIPTION**
@@ -489,44 +489,6 @@ func score_user{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}
     let (user: User) = IUserDatabase.query_user(database_address, user_id);
     let score = user.upvotes - user.downvotes;
     return (score,);
-}
-```
-
-### **Array Returns**
-
-**DESCRIPTION**
-
-```rust
-// Declare this file as a StarkNet contract.
-%lang starknet
-// Range check will ensure numbers stay within the felt range
-// Pedersen will allow us to use the Pedersen hash function native to many operations
-%builtins pedersen range_check
-
-// The HashBuiltin type is required when passing a pedersen_ptr as an implicit argument
-from starkware.cairo.common.cairo_builtins import HashBuiltin
-
-@storage_var
-func stored_number() -> (res: felt) {
-}
-
-// Function to get the stored value
-@view
-func get{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}() -> (stored: felt) {
-    let (stored) = stored_number.read();
-    return (stored,);
-}
-
-// Function to accept an array
-@external
-func save{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
-    input_array_len: felt, input_array: felt*
-) {
-    let first = input_array[0];
-    let last = input_array[input_array_len - 1];
-    let solution = first * 10 - last * 2;
-    stored_number.write(solution);
-    return ();
 }
 ```
 
@@ -645,10 +607,43 @@ func save{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
 }
 ```
 
+### **Read and Write Arrays**
 
+**DESCRIPTION**
 
+```rust
+// Declare this file as a StarkNet contract.
+%lang starknet
+// Range check will ensure numbers stay within the felt range
+// Pedersen will allow us to use the Pedersen hash function native to many operations
+%builtins pedersen range_check
 
+// The HashBuiltin type is required when passing a pedersen_ptr as an implicit argument
+from starkware.cairo.common.cairo_builtins import HashBuiltin
 
+@storage_var
+func stored_number() -> (res: felt) {
+}
+
+// Function to get the stored value
+@view
+func get{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}() -> (stored: felt) {
+    let (stored) = stored_number.read();
+    return (stored,);
+}
+
+// Function to accept an array
+@external
+func save{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
+    input_array_len: felt, input_array: felt*
+) {
+    let first = input_array[0];
+    let last = input_array[input_array_len - 1];
+    let solution = first * 10 - last * 2;
+    stored_number.write(solution);
+    return ();
+}
+```
 
 ## **Data Locations**
 

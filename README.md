@@ -1537,9 +1537,9 @@ func check_wallet{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_pt
 ### **Bitwise Operations**
 
 **DESCRIPTION**
--`bitwise_and(x, y)` - the result of bitwise AND operation on x and y
--`bitwise_xor(x, y)` - the result of bitwise XOR operation on x and y
--`bitwise_or(x, y)` - the result of bitwise OR operation on x and y
+- `bitwise_and(x, y)` - the result of bitwise AND operation on x and y
+- `bitwise_xor(x, y)` - the result of bitwise XOR operation on x and y
+- `bitwise_or(x, y)` - the result of bitwise OR operation on x and y
 
 ```javascript
 %builtins bitwise
@@ -1592,9 +1592,9 @@ func main{bitwise_ptr: BitwiseBuiltin*}() -> () {
 ### **Bitwise Starknet**
 
 **DESCRIPTION**
--`bitwise_and(x, y)` - the result of bitwise AND operation on x and y
--`bitwise_xor(x, y)` - the result of bitwise XOR operation on x and y
--`bitwise_or(x, y)` - the result of bitwise OR operation on x and y
+- `bitwise_and(x, y)` - the result of bitwise AND operation on x and y
+- `bitwise_xor(x, y)` - the result of bitwise XOR operation on x and y
+- `bitwise_or(x, y)` - the result of bitwise OR operation on x and y
 
 ```javascript
 %lang starknet

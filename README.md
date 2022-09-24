@@ -12,7 +12,7 @@ This site is meant to provide some basic examples on some different functionalit
 
 **DESCRIPTION**
 
-```javascript
+```rust
 // Declare this file as a StarkNet contract.
 %lang starknet
 // Range check will ensure numbers stay within the felt range

@@ -1401,6 +1401,60 @@ func check_values{range_check_ptr}(number: felt) -> (
 }
 ```
 
+### **Bitwise Operations**
+
+**DESCRIPTION**
+- `bitwise_and(x, y)` - the result of bitwise AND operation on x and y
+- `bitwise_xor(x, y)` - the result of bitwise XOR operation on x and y
+- `bitwise_or(x, y)` - the result of bitwise OR operation on x and y
+
+```rust
+%builtins bitwise
+from starkware.cairo.common.cairo_builtins import BitwiseBuiltin
+from starkware.cairo.common.bitwise import bitwise_operations, bitwise_and, bitwise_xor, bitwise_or
+
+func main{bitwise_ptr: BitwiseBuiltin*}() -> () {
+    // Define two binary numbers, a and b, using powers of 2 representation
+
+    // Binary: a = 1100
+    let a = 1 * 2 ** 3 + 1 * 2 ** 2 + 0 * 2 ** 1 + 0 * 2 ** 0;
+    assert a = 1 * 8 + 1 * 4 + 0 * 2 + 0 * 1;
+    assert a = 12;  // Decimal representation
+
+    // Binary: b = 1010
+    let b = 1 * 2 ** 3 + 0 * 2 ** 2 + 1 * 2 ** 1 + 0 * 2 ** 0;
+    assert b = 1 * 8 + 0 * 4 + 1 * 2 + 0 * 1;
+    assert b = 10;  // Decimal representation
+
+    // 1100 AND 1010 = 1000
+    let (a_and_b) = bitwise_and(a, b);
+    assert a_and_b = 1 * 2 ** 3 + 0 * 2 ** 2 + 0 * 2 ** 1 + 0 * 2 ** 0;
+
+    // 1100 XOR 1010 = 0110
+    let (a_xor_b) = bitwise_xor(a, b);
+    assert a_xor_b = 0 * 2 ** 3 + 1 * 2 ** 2 + 1 * 2 ** 1 + 0 * 2 ** 0;
+
+    // 1100 XOR 1010 = 1110
+    let (a_or_b) = bitwise_or(a, b);
+    assert a_or_b = 1 * 2 ** 3 + 1 * 2 ** 2 + 1 * 2 ** 1 + 0 * 2 ** 0;
+
+    // User defined values x and y. Returns all three operations
+    let (_and, _xor, _or) = bitwise_operations(a, b);
+
+    // Check that they match the result above
+    assert _and = a_and_b;
+    assert _xor = a_xor_b;
+    assert _or = a_or_b;
+
+    // Bitwise operations must be less than 251-bit
+    // let (c) = bitwise_or(2**251, 2**3); // Fails
+    let (c) = bitwise_or(2 ** 250, 2 ** 3);
+    assert c = 2 ** 250 + 2 ** 3;
+
+    return ();
+}
+```
+
 ### **Counter**
 
 **DESCRIPTION**
@@ -1495,120 +1549,6 @@ func check_wallet{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_pt
     alloc_locals;
     let (local balance) = wallet_balance.read(user);
     return (balance,);
-}
-
-```
-## Bitwise
-
-### **Bitwise Operations**
-
-**DESCRIPTION**
-- `bitwise_and(x, y)` - the result of bitwise AND operation on x and y
-- `bitwise_xor(x, y)` - the result of bitwise XOR operation on x and y
-- `bitwise_or(x, y)` - the result of bitwise OR operation on x and y
-
-```rust
-%builtins bitwise
-from starkware.cairo.common.cairo_builtins import BitwiseBuiltin
-from starkware.cairo.common.bitwise import bitwise_operations, bitwise_and, bitwise_xor, bitwise_or
-
-func main{bitwise_ptr: BitwiseBuiltin*}() -> () {
-    // Define two binary numbers, a and b, using powers of 2 representation
-
-    // Binary: a = 1100
-    let a = 1 * 2 ** 3 + 1 * 2 ** 2 + 0 * 2 ** 1 + 0 * 2 ** 0;
-    assert a = 1 * 8 + 1 * 4 + 0 * 2 + 0 * 1;
-    assert a = 12;  // Decimal representation
-
-    // Binary: b = 1010
-    let b = 1 * 2 ** 3 + 0 * 2 ** 2 + 1 * 2 ** 1 + 0 * 2 ** 0;
-    assert b = 1 * 8 + 0 * 4 + 1 * 2 + 0 * 1;
-    assert b = 10;  // Decimal representation
-
-    // 1100 AND 1010 = 1000
-    let (a_and_b) = bitwise_and(a, b);
-    assert a_and_b = 1 * 2 ** 3 + 0 * 2 ** 2 + 0 * 2 ** 1 + 0 * 2 ** 0;
-
-    // 1100 XOR 1010 = 0110
-    let (a_xor_b) = bitwise_xor(a, b);
-    assert a_xor_b = 0 * 2 ** 3 + 1 * 2 ** 2 + 1 * 2 ** 1 + 0 * 2 ** 0;
-
-    // 1100 XOR 1010 = 1110
-    let (a_or_b) = bitwise_or(a, b);
-    assert a_or_b = 1 * 2 ** 3 + 1 * 2 ** 2 + 1 * 2 ** 1 + 0 * 2 ** 0;
-
-    // User defined values x and y. Returns all three operations
-    let (_and, _xor, _or) = bitwise_operations(a, b);
-
-    // Check that they match the result above
-    assert _and = a_and_b;
-    assert _xor = a_xor_b;
-    assert _or = a_or_b;
-
-    // Bitwise operations must be less than 251-bit
-    // let (c) = bitwise_or(2**251, 2**3); // Fails
-    let (c) = bitwise_or(2 ** 250, 2 ** 3);
-    assert c = 2 ** 250 + 2 ** 3;
-
-    return ();
-}
-
-```
-
-### **Bitwise Starknet**
-
-**DESCRIPTION**
-- `bitwise_and(x, y)` - the result of bitwise AND operation on x and y
-- `bitwise_xor(x, y)` - the result of bitwise XOR operation on x and y
-- `bitwise_or(x, y)` - the result of bitwise OR operation on x and y
-
-```rust
-%lang starknet
-%builtins bitwise
-
-from starkware.cairo.common.cairo_builtins import BitwiseBuiltin
-from starkware.cairo.common.bitwise import bitwise_operations, bitwise_and, bitwise_xor, bitwise_or
-
-@view
-func check_bitwise{bitwise_ptr: BitwiseBuiltin*}() -> () {
-    // Define two binary numbers, a and b, using powers of 2 representation
-
-    // Binary: a = 1100
-    let a = 1 * 2 ** 3 + 1 * 2 ** 2 + 0 * 2 ** 1 + 0 * 2 ** 0;
-    assert a = 1 * 8 + 1 * 4 + 0 * 2 + 0 * 1;
-    assert a = 12;  // Decimal representation
-
-    // Binary: b = 1010
-    let b = 1 * 2 ** 3 + 0 * 2 ** 2 + 1 * 2 ** 1 + 0 * 2 ** 0;
-    assert b = 1 * 8 + 0 * 4 + 1 * 2 + 0 * 1;
-    assert b = 10;  // Decimal representation
-
-    // 1100 AND 1010 = 1000
-    let (a_and_b) = bitwise_and(a, b);
-    assert a_and_b = 1 * 2 ** 3 + 0 * 2 ** 2 + 0 * 2 ** 1 + 0 * 2 ** 0;
-
-    // 1100 XOR 1010 = 0110
-    let (a_xor_b) = bitwise_xor(a, b);
-    assert a_xor_b = 0 * 2 ** 3 + 1 * 2 ** 2 + 1 * 2 ** 1 + 0 * 2 ** 0;
-
-    // 1100 XOR 1010 = 1110
-    let (a_or_b) = bitwise_or(a, b);
-    assert a_or_b = 1 * 2 ** 3 + 1 * 2 ** 2 + 1 * 2 ** 1 + 0 * 2 ** 0;
-
-    // User defined values x and y. Returns all three operations
-    let (_and, _xor, _or) = bitwise_operations(a, b);
-
-    // Check that they match the result above
-    assert _and = a_and_b;
-    assert _xor = a_xor_b;
-    assert _or = a_or_b;
-
-    // Bitwise operations must be less than 251-bit
-    // let (c) = bitwise_or(2**251, 2**3); // Fails
-    let (c) = bitwise_or(2 ** 250, 2 ** 3);
-    assert c = 2 ** 250 + 2 ** 3;
-
-    return ();
 }
 ```
 

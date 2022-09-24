@@ -518,8 +518,9 @@ func save{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
 
 **DESCRIPTION**
 
+*struct_returns_user_database.cairo*
+
 ```rust
-//struct_returns_user_database.cairo
 
 // Declare this file as a StarkNet contract.
 %lang starknet
@@ -570,8 +571,9 @@ func register_user{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_p
 
 ```
 
+*struct_returns_user_analyst.cairo*
+
 ```rust
-//struct_returns_user_analyst.cairo
 
 // Declare this file as a StarkNet contract.
 %lang starknet
@@ -1062,7 +1064,7 @@ func get_modulo{range_check_ptr}(a: felt, b: felt) -> (result: felt) {
 
 **DESCRIPTION**
 
-### **Contract Calls A**
+*Contract Calls A*
 
 ```rust
 // Declare this file as a StarkNet contract.
@@ -1139,7 +1141,7 @@ func set_B_address{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_p
 
 ```
 
-### **Contract Calls B**
+*Contract Calls B*
 
 ```rust
 // Declare this file as a StarkNet contract.

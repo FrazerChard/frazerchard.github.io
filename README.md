@@ -29,129 +29,6 @@ func hello_world() -> (num_1: felt, num_2: felt) {
 }
 ```
 
-## Function Decorators
-
-### Constructors
-
-```javascript
-// Declare this file as a StarkNet contract.
-%lang starknet
-// Range check will ensure numbers stay within the felt range
-// Pedersen will allow us to use the Pedersen hash function native to many operations
-%builtins pedersen range_check
-
-// The HashBuiltin type is required when passing a pedersen_ptr as an implicit argument
-from starkware.cairo.common.cairo_builtins import HashBuiltin
-
-@storage_var
-func stored_parameter() -> (res: felt) {
-}
-
-@storage_var
-func important_contract_address() -> (res: felt) {
-}
-
-@constructor
-func constructor{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
-    special_number: felt, important_address: felt
-) {
-    stored_parameter.write(special_number);
-    important_contract_address.write(important_address);
-    return ();
-}
-
-// Func to get numbers stored at deployment
-@view
-func read_special_values{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}() -> (
-    number: felt, address: felt
-) {
-    let number = stored_parameter.read();
-    let address = important_contract_address.read();
-    return (number, address);
-}
-
-```
-
-### Function Visibility
-
-- Functions with a decorator (@view, @external @storage) only handles felt type arguments
-- Generic helper functions can be used to handle arguments other than felt
-
-- Contracts have 2 entry points, where generic functions or storage may be accessed
-- @external for writing -> @storage to write state, or use a generic helper function
-- @view for reading -> @storage to read state, or use a generic helper function
-
-
-```javascript
-// Declare this file as a StarkNet contract.
-%lang starknet
-// Range check will ensure numbers stay within the felt range
-// Pedersen will allow us to use the Pedersen hash function native to many operations
-%builtins pedersen range_check
-
-// The HashBuiltin type is required when passing a pedersen_ptr as an implicit argument
-from starkware.cairo.common.cairo_builtins import HashBuiltin
-from starkware.cairo.common.alloc import alloc
-
-struct dataStruct {
-    a: felt,
-    b: felt,
-}
-
-// Only felt args
-@storage_var
-func storage() -> (res: felt) {
-}
-
-// Only felt args
-@external
-func write{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(val: felt) {
-    helper_1(val);
-    // Write functions are a transaction and should not return values
-    return ();
-}
-
-// Only felt args
-@view
-func read{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}() -> (
-    val_1: felt, val_2: felt, val_3: felt
-) {
-    // Brackets around val_2 to recieve the value from helper_2()
-    let (val_2) = helper_2();
-    let (stored_val) = storage.read();
-    // All fields in a tuple must have a name
-    return (val_1=3, val_2=val_2, val_3=stored_val);
-}
-
-// Other args, including felt allowed
-func helper_1{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(val: felt) {
-    // Implicit args in curly bracketsa re required, such as for storage related pointers
-    storage.write(val);
-    // Function does not return a value;
-    return ();
-}
-
-// Return values are designated by an arrow ->
-func helper_2() -> (val: felt) {
-    // Function accepts 0 args, and returns 1. No implicit args requires.
-    // data variable is assigned to a struct
-    let data = dataStruct(a=4, b=5);
-    // Struct is passed as argument
-    let (processed_data) = helper_3(data);
-    // Use of the name of a return var is optional
-    return (processed_data,);
-}
-
-func helper_3(a_b_data: dataStruct) -> (processed_data: felt) {
-    // Function accepts a pointer (to dataStruct instance) as seen by the '*' astrix
-    // No implicit args required. A 'tempvar' variable is needed for the compound expression
-    tempvar a_b_product = a_b_data.a * a_b_data.b;
-    return (processed_data=a_b_product,);
-}
-
-```
-
-
 ## Basic Data Structures
 
 ### Data Types
@@ -722,7 +599,7 @@ func score_user{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}
 }
 ```
 
-### Mappings
+## Mappings
 
 ```javascript
 // Declare this file as a StarkNet contract.
@@ -777,7 +654,7 @@ func read_inventory{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_
 
 ```
 
-### Dictionary
+## Dictionaries
 
 - Get a pointer to a new dictionary with default_dict_new()
 - Assert its integrity with default_dict_finalize()
@@ -826,6 +703,128 @@ func get_value_of_key{range_check_ptr}(key_1: felt, key_2: felt, key_3: felt) ->
     let (val_3) = dict_read{dict_ptr=dict}(key_3);
 
     return (val_1, val_2, val_3);
+}
+
+```
+
+## Function Decorators
+
+### Constructors
+
+```javascript
+// Declare this file as a StarkNet contract.
+%lang starknet
+// Range check will ensure numbers stay within the felt range
+// Pedersen will allow us to use the Pedersen hash function native to many operations
+%builtins pedersen range_check
+
+// The HashBuiltin type is required when passing a pedersen_ptr as an implicit argument
+from starkware.cairo.common.cairo_builtins import HashBuiltin
+
+@storage_var
+func stored_parameter() -> (res: felt) {
+}
+
+@storage_var
+func important_contract_address() -> (res: felt) {
+}
+
+@constructor
+func constructor{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
+    special_number: felt, important_address: felt
+) {
+    stored_parameter.write(special_number);
+    important_contract_address.write(important_address);
+    return ();
+}
+
+// Func to get numbers stored at deployment
+@view
+func read_special_values{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}() -> (
+    number: felt, address: felt
+) {
+    let number = stored_parameter.read();
+    let address = important_contract_address.read();
+    return (number, address);
+}
+
+```
+
+### Function Visibility
+
+- Functions with a decorator (@view, @external @storage) only handles felt type arguments
+- Generic helper functions can be used to handle arguments other than felt
+
+- Contracts have 2 entry points, where generic functions or storage may be accessed
+    - @external for writing -> @storage to write state, or use a generic helper function
+    - @view for reading -> @storage to read state, or use a generic helper function
+
+
+```javascript
+// Declare this file as a StarkNet contract.
+%lang starknet
+// Range check will ensure numbers stay within the felt range
+// Pedersen will allow us to use the Pedersen hash function native to many operations
+%builtins pedersen range_check
+
+// The HashBuiltin type is required when passing a pedersen_ptr as an implicit argument
+from starkware.cairo.common.cairo_builtins import HashBuiltin
+from starkware.cairo.common.alloc import alloc
+
+struct dataStruct {
+    a: felt,
+    b: felt,
+}
+
+// Only felt args
+@storage_var
+func storage() -> (res: felt) {
+}
+
+// Only felt args
+@external
+func write{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(val: felt) {
+    helper_1(val);
+    // Write functions are a transaction and should not return values
+    return ();
+}
+
+// Only felt args
+@view
+func read{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}() -> (
+    val_1: felt, val_2: felt, val_3: felt
+) {
+    // Brackets around val_2 to recieve the value from helper_2()
+    let (val_2) = helper_2();
+    let (stored_val) = storage.read();
+    // All fields in a tuple must have a name
+    return (val_1=3, val_2=val_2, val_3=stored_val);
+}
+
+// Other args, including felt allowed
+func helper_1{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(val: felt) {
+    // Implicit args in curly bracketsa re required, such as for storage related pointers
+    storage.write(val);
+    // Function does not return a value;
+    return ();
+}
+
+// Return values are designated by an arrow ->
+func helper_2() -> (val: felt) {
+    // Function accepts 0 args, and returns 1. No implicit args requires.
+    // data variable is assigned to a struct
+    let data = dataStruct(a=4, b=5);
+    // Struct is passed as argument
+    let (processed_data) = helper_3(data);
+    // Use of the name of a return var is optional
+    return (processed_data,);
+}
+
+func helper_3(a_b_data: dataStruct) -> (processed_data: felt) {
+    // Function accepts a pointer (to dataStruct instance) as seen by the '*' astrix
+    // No implicit args required. A 'tempvar' variable is needed for the compound expression
+    tempvar a_b_product = a_b_data.a * a_b_data.b;
+    return (processed_data=a_b_product,);
 }
 
 ```

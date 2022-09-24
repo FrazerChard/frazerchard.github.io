@@ -33,7 +33,7 @@ func hello_world() -> (num_1: felt, num_2: felt) {
 
 ## **Data Structures**
 
-### **Data Types**
+### **Felt Data Types**
 
 **DESCRIPTION**
 

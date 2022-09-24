@@ -363,7 +363,7 @@ func get_value_of_key{range_check_ptr}(key_1: felt, key_2: felt, key_3: felt) ->
 
 ## **Setters and Getters**
 
-### **Assert** 
+### **Asserts** 
 
 **DESCRIPTION**
 
@@ -400,7 +400,7 @@ func asserter(test_0: felt, test_1: felt) -> (val_1: felt, val_2: felt) {
 }
 ```
 
-### **Read and Write**
+### **Read and Write Variables**
 
 **DESCRIPTION**
 
@@ -514,7 +514,7 @@ func save{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
 }
 ```
 
-### **Read and Write Struct**
+### **Read and Write Structs**
 
 **DESCRIPTION**
 

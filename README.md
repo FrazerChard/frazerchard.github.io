@@ -1775,3 +1775,712 @@ func check_signature{ecdsa_ptr: SignatureBuiltin*}(message_hash, public_key, sig
 
 # Cairo Security By Example (v0.10.0)
 
+## Missing Input Validation
+
+DESCRIPTION:
+- In StarkNet, it is important to ensure that any user input from external functions are validated correctly.
+- This includes checking that all types, which includes felt values and uint256 values, are within the allowed range.
+- Values should be checked to ensure that they are within an acceptable boundary to ensure the protocol wont behave unexpectedly.
+- Although there are definitely cases where using zero or negative values is appropriate, developer discretion should be used.
+
+```javascript
+@external
+func insecure_token_initializer{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
+    _admin: felt,
+    _market: felt,
+    _underlying_token: felt,
+    _token_name: felt,
+    _token_symbol: felt,
+    _token_decimals: felt,
+) {
+    admin.write(_admin);
+    market.write(_market);
+    underlying.write(_underlying_token);
+    token_name.write(_token_name);
+    token_symbol.write(_token_symbol);
+    token_decimals.write(_token_decimals);
+
+    return ();
+}
+
+@external
+func more_secure_token_initializer{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
+    _admin: felt,
+    _market: felt,
+    _underlying_token: felt,
+    _token_name: felt,
+    _token_symbol: felt,
+    _token_decimals: felt,
+) {
+    const TOKEN_DECIMALS = 18;
+
+    with_attr error_message("Token: zero address for admin") {
+        assert_not_zero(_admin);
+    }
+    admin.write(_admin);
+
+    with_attr error_message("Token: zero address for market") {
+        assert_not_zero(_market);
+    }
+    market.write(_market);
+
+    with_attr error_message("Token: zero address for underlying") {
+        assert_not_zero(_underlying_token);
+    }
+    underlying.write(_underlying_token);
+
+    with_attr error_message("Token: zero value for token name") {
+        assert_not_zero(_token_name);
+    }
+    token_name.write(_token_name);
+
+    with_attr error_message("Token: zero value for token symbol") {
+        assert_not_zero(_token_symbol);
+    }
+    token_symbol.write(_token_symbol);
+
+    with_attr error_message("Token: zero value for token decimals") {
+        assert_not_zero(_token_decimals);
+    }
+    with_attr error_message("Token: token decimals out of range") {
+        assert_le_felt(_token_decimals, TOKEN_DECIMALS);
+    }
+    token_decimals.write(_token_decimals);
+
+    return ();
+}
+```
+
+FIX:
+- Ensure that all values are checked to be within expected ranges and not negative or zero unless required.
+
+## Account Abstraction Missing Zero Address Checks
+
+DESCRIPTION:
+- In StarkNet, the account abstraction model differs from the Solidity account model.
+- There are no EOA accounts in StarkNet, which means that all addresses are contract addresses.
+- Generally, when implementing a StarkNet account, users will deploy a contract that authenticates the user and makes calls on the users behalf.
+- Although calls are expected to be performed through a contract account, it is still possible to directly send transactions to contracts directly.
+- From the perspective of the contract, the syscall get_caller_address will always return zero.
+- This could result in broken access control checks or even sending tokens to a zero address, accidentally burning them from the supply.
+
+```javascript
+@external
+func insecure_claim_tokens{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
+    sender_address: felt
+) {
+    let (user) = get_caller_address();
+    // No validation on caller
+    let (user_current_balance) = user_balances.read(sender_address);
+    // Writes the updated balance to the address zero.
+    // Someone may now directly call the contract and withdraw those funds.
+    user_balances.write(user, user_current_balance + 200);
+
+    return ();
+}
+
+@external
+func more_secure_claim_tokens{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
+    sender_address: felt
+) {
+    let (user) = get_caller_address();
+    assert_not_zero(user);
+
+    let (user_current_balance) = user_balances.read(sender_address);
+    user_balances.write(user, user_current_balance + 200);
+
+    return ();
+}
+```
+
+FIX:
+- Add zero address checks, which will prevent users from interacting directly with the contract.
+
+
+## Lack of Address Sanity Checks
+
+DESCRIPTION:
+- When inputting Ethereum addresses into Starknet for L1-L2 communication, you must validate the Ethereum address entered into Starknet DApp.
+- Ensure the Ethereum address is bound checked, as if a user enters an invalid Ethereum address it could cause unexpected behaviour to occur when communicating with Ethereum layer.
+- StarkNet addresses are of type felt, which is between the range of 0 < x < P (2^251 + 17 * 2^192 + 1), whereas L1 Ethereum addresses are of type uint160, which is less than the felt size.
+
+```javascript
+@external
+func insecure_set_l1_bridge{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
+    l1_bridge_address: felt
+) {
+    l1_bridge.write(val=l1_bridge_address);
+    return ();
+}
+
+const ETH_ADDRESS_BOUND = 2 ** 160;
+
+@external
+func more_secure_set_l1_bridge{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
+    l1_bridge_address: felt
+) {
+    // Check l1 bridge address is valid
+    with_attr error_message("Invalid L1 Ethereum address") {
+        assert_lt_felt(l1_bridge_address, ETH_ADDRESS_BOUND);
+        assert_not_zero(l1_bridge_address);
+    }
+    l1_bridge.write(val=l1_bridge_address);
+    return ();
+}
+```
+
+FIX:
+- When using the 160-bit Ethereum address in StarkNet, ensure that the L1 address is in the range 0 < X < 2**160
+
+## Interacting with Arbitrary Tokens
+
+DESCRIPTION:
+- When interacting with arbitrary tokens, it is essential to ensure that each transfer is validated with balance checks.
+- This is because some tokens might not implement the same logic on transfer.
+- It is recommended to check the balance of the token before, and after the transfer to ensure that the amount transferred matches.
+
+```javascript
+@external
+func insecure_pay_someone{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
+    amount: Uint256, reciever: felt, token: felt
+) {
+    let (sender) = get_caller_address();
+    IERC20.transferFrom(contract_address=token, sender=sender, recipient=reciever, amount=amount);
+    return ();
+}
+
+@external
+func more_secure_pay_someone{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
+    amount: Uint256, reciever: felt, token: felt
+) {
+    let (sender) = get_caller_address();
+    let (balance_before) = IERC20.balanceOf(contract_address=token, account=reciever);
+    IERC20.transferFrom(contract_address=token, sender=sender, recipient=reciever, amount=amount);
+    let (balance_after) = IERC20.balanceOf(contract_address=token, account=reciever);
+    let (calculated_balance: Uint256) = SafeUint256.add(balance_before, amount);
+    let (is_equal) = uint256_eq(balance_after, calculated_balance);
+    with_attr error_message("Incorrect balance") {
+        assert is_equal = 1;
+    }
+    return ();
+}
+```
+
+FIX:
+- Calculate the expected balance increase and then compare whether the updated balance after the transfer matches what is expected.
+
+## Uint256 Checks
+
+DESCRIPTION:
+- Uint256 values are made up from two felt, which should contain 128-bits each.
+- This means that it is possible to control both the lower and upper portions of a Uint256.
+- This enables malicious actors to manipulate the contract logic for their own gain.
+- Code should always verify that any Uint256 arguments are valid Uint256, using the uint256_check,
+
+```javascript
+@external
+func insecure_send_message{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
+    message_data: Uint256
+) {
+    let (contract_address) = l1_contract.read();
+    let (message_payload: felt*) = alloc();
+    // No checks performed on the size of messa
+    assert message_payload[0] = message_data.low;
+    assert message_payload[1] = message_data.high;
+
+    send_message_to_l1(to_address=contract_address, payload_size=2, payload=message_payload);
+    return ();
+}
+
+@external
+func more_secure_send_message{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
+    message_data: Uint256
+) {
+    let (contract_address) = l1_contract.read();
+    let (message_payload: felt*) = alloc();
+
+    with_attr error_message("Invalid Uint256") {
+        uint256_check(message_data);
+    }
+
+    assert message_payload[0] = message_data.low;
+    assert message_payload[1] = message_data.high;
+
+    send_message_to_l1(to_address=contract_address, payload_size=2, payload=message_payload);
+    return ();
+}
+```
+
+FIX:
+- When using a Uint256, use the uint256_check from the Starknet library Uint256 to ensure it is a valid Uint256 value.
+
+## Incorrect Felt Comparison
+
+DESCRIPTION:
+- Cairo has two different methods to check whether a value is less than or equal to the operator; 'assert_le' and 'assert_nn_le'. 'assert_le' verifies that a <= b regardless of the size of a. 'assert_nn_le' verifies that  0 <= a <= b.
+- This means 'assert_nn_le' will assert that a is non-negative as well (i.e. not greater than the RANGE_CHECK_BOUND of 2^128)
+
+```javascript
+@storage_var
+func max_supply() -> (res: felt) {
+}
+
+@external
+func bad_comparison{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}() {
+    let (value: felt) = ERC20.total_supply();
+    // Check may allow for negative supply balance
+    assert_le{range_check_ptr=range_check_ptr}(value, max_supply.read());
+
+    // more code ...
+
+    return ();
+}
+
+@external
+func better_comparison{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}() {
+    let (value: felt) = ERC20.total_supply();
+    assert_nn_le{range_check_ptr=range_check_ptr}(value, max_supply.read());
+
+    // more code ...
+
+    return ();
+}
+```
+
+FIX:
+- Review all comparisons closely to determine what sort of behaviour the comparison should have, and whether if assert_nn_le is more appropriate than assert_le.
+
+## Arithmetic Overflow
+
+DESCRIPTION:
+- The default primitive type, field element (felt), behvaes like an integer in many aspects but also has some important differnces.
+- The range of valid felts is (-P/2, P/2), where P is the 252-bit prime number used by Cairo.
+- Felt arithmetic is unchecked for underflow/overflow and this can lead to unexpected results.
+- As the range of values spans both positive and negative, performing arithmetic on two positive numbers may result in negative value.
+- This can also be seen in reverse, where multiplying two negative numbers may not result in a positve value.
+- The Uint256 module is also unchecked, meaning that over/underflows is still possible.
+
+```javascript
+@external
+func overflow{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
+    num1: felt, num2: felt
+) -> (res: felt) {
+    // num1 (P-1) = 3618502788666131213697322783095070105623107215331596699973092056135872020480
+    // num2 = 10
+    return (num1 + num2);
+    // Result = 9
+}
+
+@external
+func addition_overflow_protection{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
+    num1: felt, num2: felt
+) -> (res: felt) {
+    sum = num1 + num2;
+    with_attr error_message("Addition Overflow") {
+        assert_le_felt(num1, res);
+    }
+    return (res=sum);
+}
+
+@external
+func subtraction_underflow_protection{
+    syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr
+}(num1: felt, num2: felt) -> (res: felt) {
+    res = num1 - num2;
+    with_attr error_message("Subtraction Underflow") {
+        assert_le_felt(res, num1);
+    }
+    return (res);
+}
+
+@external
+func multiplication_validation_protection{
+    syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr
+}(num1: felt, num2: felt) -> (res: felt) {
+    res = num1 * num2;
+    with_attr error_message("Multiplication Overflow") {
+        if (num2 != 0) {
+            assert (res / num2) = num1;
+        }
+    }
+    return (res);
+}
+
+@external
+func multiplication_overflow_protection{
+    syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr
+}(num1: felt, num2: felt) -> (res: felt) {
+    res = num1 * num2;
+    with_attr error_message("Multiplication Overflow") {
+        if (num2 != 0) {
+            assert (res / num2) = num1;
+        }
+    }
+    return (res);
+}
+```
+
+FIX:
+- Always add checks to ensure that the arithmetic is behaving as expected.
+- Make use of various libraries, such as the OpenZeppelin Uint256 library or Nethermind Cairo SafeMath
+
+## Arithmetic Division
+
+DESCRIPTION:
+- Cairo math is performed over a finite field, hence the numeric type is called a felt (field element).
+- Apart from overflows/underflows, addition, multiplication and subtraction will generally behave as expected in Cairo.
+- In Cairo, it is more intuitive to think of division as the inverse of multiplication.
+- When a number divides a whole number of times into another, the result is as it would be expected, i.e. 45/5=9
+- If the numbers do not match up perfectly, the result can be unexpected i.e. 30/9=1206167596222043737899107594365023368541035738443865566657697352045290673497.
+- This is because 120...97 * 9 = 30 (modulo the 252-bit Prime used by Cairo)
+
+```javascript
+@external
+func bad_scale_down_tokens{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}() -> (
+    scaled_down_balance: felt
+) {
+    let (user) = get_caller_address();
+
+    let (user_current_balance) = user_balances.read(user);
+    let (scaled_down_balance) = user_current_balance / 10 ** 18;
+    return (scaled_down_balance);
+}
+
+@external
+func better_scale_down_tokens{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
+    ) -> (scaled_down_balance: Uint256) {
+    let (user) = get_caller_address();
+
+    let (user_current_balance) = user_balances.read(user);
+    let (scaled_down_balance, _) = uint256_unsigned_div_rem(user_current_balance, 10 ** 18);
+    return (scaled_down_balance);
+}
+```
+
+FIX:
+- Review which numeric type is most appropriate for the use case.
+- If the program relies on division, consider using the Starknet Uint256 module rather than the felt primitive.
+
+## Transfer of Important Variables
+
+DESCRIPTION:
+- When changing the values of important variables, such as ownership or admin variables, it is easy to accidentally input an incorrect value.
+- There some be some form of check, which would ensure that any incorrect values won't immediately be live on the protocol.
+- This could result in an owner or admin being set to a wrong address, and losing access to the protocol forever as it cannot be changed back.
+- An example of this check would be timelocks, set then confirm or set then claim.
+
+```javascript
+@storage_var
+func owner() -> (res: felt) {
+}
+
+@storage_var
+func proposed_owner() -> (res: felt) {
+}
+
+// INSECURE
+func insecure_transfer_ownership{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
+    new_owner: felt
+) {
+    owner.write(new_owner);
+    return ();
+}
+
+// MORE SECURE
+func assert_only_owner{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}() {
+    let (owner: felt) = owner.read();
+    let (caller) = get_caller_address();
+
+    with_attr error_message("Caller is not the owner") {
+        assert_not_zero(caller);
+        assert owner = caller;
+    }
+    return ();
+}
+
+func secure_transfer_ownership{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
+    new_owner: felt
+) {
+    assert_only_owner();
+
+    with_attr error_message("New owner is zero address") {
+        assert_not_zero(new_owner);
+    }
+
+    proposed_owner.write(new_owner);
+    return ();
+}
+
+func secure_claim_ownership{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}() {
+    let (caller) = get_caller_address();
+    with_attr error_message("Caller is not proposed owner") {
+        assert_not_zero(caller);
+        assert proposed_owner = caller;
+    }
+    owner.write(proposed_owner);
+    return ();
+}
+
+func secure_clear_proposed_ownership{
+    syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr
+}() {
+    assert_only_owner();
+    proposed_owner.write(0);
+    return ();
+}
+```
+
+FIX:
+- There are various different safety methods to protect the change of important variables.
+- The example above is for a set then claim, but you may also use set then confirm or even a timelock.
+- Each of the safety features should contain the ability for the original owner to cancel the transfer at any point.
+
+## Multiple Contract Initializations
+
+DESCRIPTION:
+- When creating an upgradable contract, we want to make sure that the implementation contracts are protected.
+- Implementation contracts should be initialized by contract developers and sensitive functions should have access control.
+- The Proxy preset includes a fallback, an L1 handler and a constructor.
+- Before deploying this Proxy contract, developers should declare the contract class of their implementation contract.
+- After this, they can deploy the proxy contract and pass the implementation hash as a paramter.
+- If somebody initializes the implementation contract before the developer and the developer doesn't notice, this could allow malicious actors to initialize certain contracts and would be set as the admin.
+
+```javascript
+// INSECURE
+@storage_var
+func Proxy_implementation_hash() -> (class_hash: felt) {
+}
+
+@storage_var
+func Proxy_admin() -> (proxy_admin: felt) {
+}
+
+func set_proxy{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
+    proxy_admin: felt, implementation_hash: felt
+) {
+    Proxy_admin.write(proxy_admin);
+    Proxy_implementation_hash.write(implementation_hash);
+    return ();
+}
+
+// MORE SECURE
+@storage_var
+func Proxy_initialized() -> (initialized: felt) {
+}
+
+@storage_var
+func Proxy_implementation_hash() -> (class_hash: felt) {
+}
+
+@storage_var
+func Proxy_admin() -> (proxy_admin: felt) {
+}
+
+func set_proxy{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
+    proxy_admin: felt, implementation_hash: felt
+) {
+    let (initialized) = Proxy_initialized.read();
+    with_attr error_message("Contract already initialized"){
+        assert initialized = FALSE
+    }
+    Proxy_initialized.write(TRUE);
+    Proxy_implementation_hash.write(implementation_hash);
+    Proxy_admin.write(proxy_admin);
+    return ();
+}
+```
+
+FIX:
+- Always make sure to use the OpenZeppelin initializable library for contracts with init functions, as well as ensuring the deployment also includes initialization.
+- This will ensure that a contract cannot be initialized multiple times.
+- The pattern should look like this: declare the implementation contracts first, then only deploy the Proxy, then finally, initialize the implementation contract via the Proxy.
+
+## Insecure State Modifications
+
+DESCRIPTION:
+- When using the @view decorator, ensure that no state is modified, as this can be very dangerous.
+- Contrastingly, when using functions which modify state, ensure that the @external decorator is used.
+
+```javascript
+@view
+func bad_fetch_nonce{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}() -> (
+    nonce: felt
+) {
+    let (user) = get_caller_address();
+    let (nonce) = user_nonces.read(user);
+    user_nonces.write(user, nonce + 1);
+    return (nonce);
+}
+
+@view
+func better_fetch_nonce{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}() -> (
+    nonce: felt
+) {
+    let (user) = get_caller_address();
+    let (nonce) = user_nonces.read(user);
+    return (nonce);
+}
+```
+
+FIX:
+- Ensure that view functions are only ever used to read data from storage or to perform calculations.
+- As a best practice, it is recommended to review all function decorators inside the contracts and ensure that 'getters' have their visibility set as @view and 'setters' have their visibility set to @external.
+
+
+## Exposing Unwanted External Functions
+
+DESCRIPTION:
+- When importing modules with external functions, all will be automatically exposed. 
+- Generally, this is something you might want, although it is important to ensure that sensitive functions are not exposed.
+
+```javascript
+// library.cairo
+%lang starknet
+from starkware.cairo.common.cairo_builtins import HashBuiltin
+
+@storage_var
+func owner() -> (res: felt){
+}
+
+func check_owner{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr: felt*}(){
+    let caller = get_caller_address();
+    let owner = owner.read();
+    assert caller = owner;
+    return ();
+}
+
+func do_something(){
+    // do something potentially dangerous that only the owner can do
+    return ();
+}
+
+@external
+func bypass_owner_do_something(){
+    do_something();
+    return ();
+}
+
+// example.cairo
+%lang starknet
+%builtins pedersen range_check
+from starkware.cairo.common.cairo_builtins import HashBuiltin
+from library import check_owner(), do_something()
+// Even though only check_owner() and do_something() are imported, we cam still call bypass_owner_do_something()
+func check_owner_and_do_something{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr: felt*}(){
+    bypass_owner_do_something();
+
+    check_owner();
+    do_something();
+    return ();
+}
+```
+
+FIX:
+- Exercise caution when declaring external functions in a library, and be aware that possible state changes that  can be made through the function and verify it is acceptable for anyone to call.
+- To counter this, developers should follow the Extensibility pattern from OpenZeppelin.
+
+## Signature Replay Protection
+
+DESCRIPTION:
+- The StarkNet account abstraction model allows many authentication details to be offloaded to contracts.
+- This provides greater flexibility, but signature schemas need to be created carefully to avoid replay attacks and signature malleability.
+- To protect against this, it is suggested to use a unique nonce for each transfer.
+
+```javascript
+// INSECURE
+
+@external
+func insecure_swap_currency{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
+    r: felt, s: felt, amount: felt
+) {
+    alloc_locals;
+    let (local caller_address) = get_caller_address();
+    let (_signer) = signer.read();
+    let (message) = hash2{hash_ptr=pedersen_ptr}(amount, caller_address);
+
+    verify_ecdsa_signature(message=message, public_key=_signer, signature_r=r, signature_s=s);
+
+    let (_token_address) = token_address.read();
+    let (contract_address) = get_contract_address();
+
+    IERC20.transferFrom(
+        contract_address=_token_address,
+        sender=contract_address,
+        recipient=caller_address,
+        amount=Uint256(amount, 0),
+    );
+
+    return ();
+}
+
+// MORE SECURE
+
+@storage_var
+func nonces(address: felt) -> (nonce: felt) {
+}
+
+@external
+func more_secure_swap_currency{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
+    r: felt, s: felt, amount: felt
+) {
+    alloc_locals;
+    let (local caller_address) = get_caller_address();
+    let (local nonce) = nonces.read(caller_address);
+    let (_signer) = signer.read();
+
+    // Update nonce
+    nonces.write(caller_address, value=nonce + 1);
+
+    let (message) = hash2{hash_ptr=pedersen_ptr}(amount, caller_address);
+    let (message_part_2) = hash2{hash_ptr=pedersen_ptr}(message, nonce);
+
+    verify_ecdsa_signature(
+        message=message_part_2, public_key=_signer, signature_r=r, signature_s=s
+    );
+
+    let (_token_address) = token_address.read();
+    let (contract_address) = get_contract_address();
+
+    IERC20.transferFrom(
+        contract_address=_token_address,
+        sender=contract_address,
+        recipient=caller_address,
+        amount=Uint256(amount, 0),
+    );
+
+    return ();
+}
+```
+
+FIX:
+- Signatures should include a nonce for each transfer via signature, which is stored inside a mapping and incremented each time it is used.
+- This nonce is then used to generate the unique signature for each function call to avoid replay attacks.
+
+## Best Practices
+
+### State is initialized to 0
+DESCRIPTION:
+- State will always be initialized to 0, which can lead to vulnerabilities.
+- This can mean that checks where the value is set to 0 will automatically pass, even when it is not intended to.
+
+### Failing Asserts Without with_attr
+DESCRIPTION:
+- All asserts that can fail should have a with_attr to allow an error message that indicates the reason for the assert failing.
+- This allows for easier debugging of the code.
+
+### Missing Use of Boolean Library
+DESCRIPTION:
+- If the values 0 and 1 are being used to represent boolean values, the boolean library should be used to imporve readability.
+
+### Missing Event Emission
+DESCRIPTION:
+- Events should be emitted for all important state changes, such as owner/admin addresses, token address and state initialization.
+
+### Testing Related Functions inside Core Contract
+DESCRIPTION:
+- Contracts being deployed to the mainnet should only contaun functions needed for the protocol to function.
+- Testing related functions should be seperated from the main protocol logic.
+
+### Comments Not Reflecting Code
+DESCRIPTION:
+- Make sure that all comments within the code explain exactly what is actually happening in the code.

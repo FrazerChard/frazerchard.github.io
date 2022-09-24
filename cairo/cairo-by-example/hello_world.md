@@ -1,3 +1,10 @@
+---
+layout: page
+title:  "Hello World on StarkNet"
+permalink: /cairo/cairo-by-example/hello_world.md
+toc: false
+---
+
 // Declare this file as a StarkNet contract.
 %lang starknet
 // Range check will ensure numbers stay within the felt range

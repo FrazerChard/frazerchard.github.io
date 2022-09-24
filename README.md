@@ -6,7 +6,7 @@ This site is meant to provide some basic examples on some different functionalit
 * TOC
 {:toc}
 
-# Cairo By Example (v0.10.0)
+# **Cairo By Example (v0.10.0)**
 
 ## Hello, World!
 
@@ -1776,7 +1776,7 @@ func check_signature{ecdsa_ptr: SignatureBuiltin*}(message_hash, public_key, sig
 }
 ```
 
-# Cairo Security By Example (v0.10.0)
+# **Cairo Security By Example (v0.10.0)**
 
 ## Missing Input Validation
 

@@ -1635,12 +1635,10 @@ func generate{syscall_ptr: felt*, range_check_ptr}() {
 
 StarkNet (SN) contract can specify a message for an L1 Ethereum (ETH) contract to recieve.
 Three steps to this - generate, verify and digest
-1 - Custom contract on SN :
-    Generates message -> application specific contract containing `send_message_to_l1()`
-2 SN contract on ETH :
-    Verifies message validity -> StarkNet.sol contains function `consumeMessageFromL2()` -> computes the hash that ties the messages to both L1 and L2 contracts -> checks hash is stored as a fact, verified by STARK validity proof
-3 Custom contract on ETH :
-    Digests message -> L1L2Example.sol contains `withdraw()` function. -> this calls `StarkNet.sol` and verifies that the payload is valid from the specified L2 address.
+STEPS:
+- 1: Custom contract on SN : Generates message -> application specific contract containing `send_message_to_l1()`
+- 2: SN contract on ETH : Verifies message validity -> StarkNet.sol contains function `consumeMessageFromL2()` -> computes the hash that ties the messages to both L1 and L2 contracts -> checks hash is stored as a fact, verified by STARK validity proof
+- 3: Custom contract on ETH : Digests message -> L1L2Example.sol contains `withdraw()` function. -> this calls `StarkNet.sol` and verifies that the payload is valid from the specified L2 address.
 
 ```javascript
 // Declare this file as a StarkNet contract.
@@ -1746,7 +1744,12 @@ func get_hash{pedersen_ptr: HashBuiltin*}(x, y) -> (hash: felt, hash_with_zero: 
 ### Verify ECDSA
 
 Cairo has a bultin to perform ECDSA signature verification.
-Steps 1: Create a message to sign -> 2: hash message using pedersen function -> 3: obtain private key -> 4: sign message hash using priv key -> 5: record sig_r & sig_s
+STEPS:
+- 1: Create a message to sign
+- 2: hash message using pedersen function 
+- 3: obtain private key 
+- 4: sign message hash using priv key 
+- 5: record sig_r & sig_s
 
 Python script can be used to generate private key but in this case, we are using the hardcoded values.
 

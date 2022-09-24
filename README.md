@@ -1,5 +1,10 @@
 # frazerchard.github.io
 
+# Cairo and Starknet by Example
+
+* TOC
+{:toc}
+
 Cairo is a programming language created by [Starkware](https://www.cairo-lang.org/), which can be used to develop scalable, layer two blockchain applications.
 For complete and accurate information on how to use the language, see the [official documentation](https://www.cairo-lang.org/docs/).
 

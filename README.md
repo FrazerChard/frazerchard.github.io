@@ -1532,6 +1532,7 @@ func check_wallet{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_pt
 }
 
 ```
+## Bitwise
 
 ### **Bitwise Operations**
 

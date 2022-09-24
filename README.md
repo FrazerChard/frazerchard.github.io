@@ -29,9 +29,7 @@ func hello_world() -> (num_1: felt, num_2: felt) {
 }
 ```
 
-## Basic Data Structures
-
-### Data Types
+## Data Types
 
 ```javascript
 // Declare this file as a StarkNet contract.
@@ -184,7 +182,7 @@ func asserter(test_0: felt, test_1: felt) -> (val_1: felt, val_2: felt) {
 }
 ```
 
-### Data Locations
+## Data Locations
 
 ```javascript
 // Declare this file as a StarkNet contract.

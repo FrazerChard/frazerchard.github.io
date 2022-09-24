@@ -8,7 +8,7 @@ This site is meant to provide some basic examples on some different functionalit
 
 # **Cairo By Example (v0.10.0)**
 
-## **Hello, World!**
+## Hello, World!
 
 **DESCRIPTION**
 

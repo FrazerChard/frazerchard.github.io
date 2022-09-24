@@ -1,7 +1,3 @@
----
-layout: home
----
-
 # frazerchard.github.io
 
 Cairo is a programming language created by [Starkware](https://www.cairo-lang.org/), which can be used to develop scalable, layer two blockchain applications.

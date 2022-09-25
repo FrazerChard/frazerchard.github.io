@@ -11,23 +11,64 @@ This site is meant to provide some basic examples on some different functionalit
 ## **Hello, World!**
 
 **DESCRIPTION**
+- Basic example of a `greeting` function, which returns a simple greeting as represented as a `felt` value. 
+
+```javascript
+// Declare this file as a StarkNet contract.
+%lang starknet
+
+// View decorator exposes the hello_world function for reading
+@view
+func greeting() -> (num_1: felt, num_2: felt) {
+    let greeting_string = 'Hello, World!';
+    return (greeting_string);
+}
+```
+
+## **Basic Counter Application**
+
+**DESCRIPTION**
+- This is an example of a basic contract where a balance is stored and a call may increase the balance.
+- The three implicit arguments within the functions are required for storage operations.
+- When returning function call values to a reference, ensure the value is captured inside brackets.
+- The `@external` function allows state modification, whereas the `@view` function can only read state. Functions without either decorators can only be accessed by the contract.
 
 ```javascript
 // Declare this file as a StarkNet contract.
 %lang starknet
 // Range check will ensure numbers stay within the felt range
-%builtins range_check
+// Pedersen will allow us to use the Pedersen hash function native to many operations
+%builtins pedersen range_check
 
-// Alphabet substituation cipher for each letter.
-// a = 01, b = 02, etc.
-const hello = 10000805121215;  // 08, 05, 12, 12, 15
-const world = 10002315181204;  // 23, 15, 18, 12, 04.
+// The HashBuiltin type is required when passing a pedersen_ptr as an implicit argument
+from starkware.cairo.common.cairo_builtins import HashBuiltin
 
-// View decorator exposes the hello_world function for reading
-// Returns two constants with the type felt
+// Creating a variable called 'count' that stores a felt
+@storage_var
+func balance() -> (res: felt) {
+}
+
+// Function to retrieve current balance
 @view
-func hello_world() -> (num_1: felt, num_2: felt) {
-    return (hello, world);
+func get{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}() -> (value: felt) {
+    let (value) = balance.read();
+    return (value,);
+}
+
+// Function to increment balance by 1
+@external
+func increment{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}() {
+    let (res) = balance.read();
+    balance.write(res + 1);
+    return ();
+}
+
+// Function to decrement balance by 1
+@external
+func decrement{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}() {
+    let (res) = balance.read();
+    balance.write(res - 1);
+    return ();
 }
 ```
 
@@ -36,6 +77,10 @@ func hello_world() -> (num_1: felt, num_2: felt) {
 ### **Felt Data Types**
 
 **DESCRIPTION**
+- Cairo only uses one data type which is called a field element, otherwise known as a `felt`. This can be thought of as an unsigned 252-bit integer (Uint252). 
+- Short strings which contain up to 31 ASCII characters can be used, but are internally represented as a `felt`.
+- The new string representation is a lookup conversion of ASCII characters into two hex characters.
+- Adding strings does not concatenate the characters, but performs addition of the underlying felts.
 
 ```javascript
 // Declare this file as a StarkNet contract.
@@ -64,9 +109,30 @@ func types(user_number: felt) -> (
 }
 
 ```
+
 ### **Variables**
 
 **DESCRIPTION**
+- There are four different types of variables in Cairo:
+    - let (references):
+        - Can be revoked
+        - Can be redefined
+        - Can be references to values (let foo = 21) 
+        - Can be references to expressions (let bar = foo)
+    - tempvar (temporary references):
+        - Can be revoked as they rely on `ap`
+        - Can be redefined
+        - Based on the `ap` register
+        - Auto-increment the `ap` register
+    - const (constants):
+        - Cannot be revoked
+        - Cannot be redefined
+        - Only integers
+    - local (local variables):
+        - Cannot be revoked
+        - Can be redefined
+        - Based on the `fp` register
+        - Do not auto-increment the `ap` register
 
 ```javascript
 // Declare this file as a StarkNet contract.
@@ -127,7 +193,11 @@ func use_variables{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_p
 ### **Tuples**
 
 **DESCRIPTION**
-
+- Tuples are an ordered collection of elements and can consist of any combination of valid types, including other tuples.
+- They are represented as a comma seperated list of elements enclosed in brackets (e.g. (1, 2, 3, 4) ).
+- Trailing commas are used to differentiate single element tuples from regular parenthesis (e.g. (1,)).
+- Elements inside a tuple are accessed using the index in square brackets, starting at 0.
+ 
 ```javascript
 // Declare this file as a StarkNet contract.
 %lang starknet
@@ -170,8 +240,9 @@ func get_sum(tuple_ptr: felt*, idx_1: felt, idx_2: felt) -> (total: felt) {
 ### **Arrays**
 
 **DESCRIPTION**
+- Cairo allows the use of arrays, which store the elements in memory segments.
 - Arrays are defined using a pointer to the first element of the array.
-- Their values are addressed by their location in memory relative to the pointer
+- They are implemented as a continuous list of felt values inside memory and their values are addressed by their location in memory relative to the pointer.
 
 ```javascript
 // Declare this file as a StarkNet contract.
@@ -204,6 +275,10 @@ func read_array{range_check_ptr}(index: felt) -> (value: felt) {
 ### **Structs**
 
 **DESCRIPTION**
+- Structs can be used within Cairo to define arbitrary data types.
+- These are implemented as a continuous list of `felt` values in memory.
+- Members inside structs can be accessed using the dot syntax (e.g. `Foo.bar`).
+- Struct pointers are implicitly casted to `felt` pointers (e.g. `Foo*` is casted to `felt*`).
 
 ```javascript
 // Declare this file as a StarkNet contract.
@@ -254,6 +329,9 @@ func register_user{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_p
 ### **Mappings**
 
 **DESCRIPTION**
+- Mappings can be created via functions that are annotated with the `@storage_var` decorator and recieve atleast one `felt` parameter.
+- Nested mappings can be created by adding more than one parameter.
+- When using storage functions `read` and `write`, the keys have need to be supplied as the first arguments if nested mappings are used.
 
 ```javascript
 // Declare this file as a StarkNet contract.
@@ -311,10 +389,13 @@ func read_inventory{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_
 ### **Dictionaries**
 
 **DESCRIPTION**
-- Get a pointer to a new dictionary with `default_dict_new()`
-- Assert its integrity with `default_dict_finalize()`
-- Assign a value to a key `dict_write()`
-- Read the value of a key `dict_read()`
+- Dictionaries are created using the `default_dict_new()` module from the common Cairo library.
+- Every key will return the fefault value unless it is explicitly set.
+- STEPS:
+    - Get a pointer to a new dictionary with `default_dict_new()`
+    - Assert its integrity with `default_dict_finalize()`
+    - Assign a value to a key `dict_write()`
+    - Read the value of a key `dict_read()`
 
 ```javascript
 %lang starknet
@@ -364,6 +445,10 @@ func get_value_of_key{range_check_ptr}(key_1: felt, key_2: felt, key_3: felt) ->
 ### **Pointers**
 
 **DESCRIPTION**
+- Pointers are ways to share data structures between different Cairo functions.
+- A pointer will point to a memory address and can be used to access the underlying value without passing around the actual value.
+- They can be identified by the `*` that follows a type declaration (e.g. `tuple*` or `Foo*`).
+- To create a pointer, you prepend `&` to the variable name (e.g. `&foo`)
 
 ```javascript
 // Declare this file as a StarkNet contract.
@@ -400,6 +485,14 @@ func tuple_maker(val: felt) -> (a_tuple: felt*) {
 ### **Data Locations**
 
 **DESCRIPTION**
+- Variable data may exist in one of two locations:
+    - Storage:
+        - Retained in contract state and as CALLDATA on Ethereum.
+        - Declared inside a `@storage_var` function.
+    - Memory:
+        - Temporary representation that only persists during a portion of contract execution.
+        - Declared within the scope of a contract.
+        - Not stored in contract state or on Ethereum blockchain. 
 
 ```javascript
 // Declare this file as a StarkNet contract.
@@ -460,6 +553,9 @@ func read_values{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr
 ### **Asserts** 
 
 **DESCRIPTION**
+- The Cairo `assert` statement can be used for two different use cases:
+    - Checking if two variables are the same
+    - Set a variables value if it is not currently set
 
 ```javascript
 // An assert statement can be used for two purposes
@@ -497,6 +593,8 @@ func asserter(test_0: felt, test_1: felt) -> (val_1: felt, val_2: felt) {
 ### **Read and Write Variables**
 
 **DESCRIPTION**
+- When writing state variables, a transaction will need to be sent and is stored within the contract state and is included as rollup data on Ethereum.
+- When reading a state variable, no transaction is needed.
 
 ```javascript
 // Declare this file as a StarkNet contract.
@@ -531,6 +629,7 @@ func save{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(input
 ### **Read and Write Tuples**
 
 **DESCRIPTION**
+- Tuples can be read and written the same way as generic variables.
 
 ```javascript
 // Declare this file as a StarkNet contract.
@@ -573,6 +672,8 @@ func save{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
 ### **Read and Write Arrays**
 
 **DESCRIPTION**
+- When making a call to an `@external` function, the function may accept an array as an argument.
+- Below is a contract which accepts an array, performs a calculation using elements from the array and writes the result to the contract state. 
 
 ```javascript
 // Declare this file as a StarkNet contract.
@@ -611,6 +712,12 @@ func save{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
 ### **Read and Write Structs**
 
 **DESCRIPTION**
+- A struct can be used to read values from an external function inside a contract. 
+- This can be used to pass values between two contracts.
+
+- The below example contains two contracts:
+    - `struct_returns_user_database.cairo` is used to write and store user data
+    - `struct_returns_user_analyst.cairo` is used to score a user by reading and polling the database.
 
 ```javascript
 // struct_returns_user_database.cairo
@@ -707,6 +814,10 @@ func score_user{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}
 ### **Constructors**
 
 **DESCRIPTION**
+- It is often necessary to initialize a contracts state upon deployment before public use.
+- The `@constructor` decorator allows you to annotate a function that will be called immediately after the contract is deployed.
+- The function with the `@constructor` decorator should also be named `constructor`.
+- This can only ever be called once on deployment and will not be possible to call again. 
 
 ```javascript
 // Declare this file as a StarkNet contract.
@@ -750,12 +861,12 @@ func read_special_values{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_c
 ### **Function Visibility**
 
 **DESCRIPTION**
-- Functions with a decorator (@view, @external @storage) only handles felt type arguments
-- Generic helper functions can be used to handle arguments other than felt
+- Functions with a decorator (`@view`, `@external` and `@storage`) only handles felt type arguments.
+- Generic helper functions can be used to handle arguments other than felt.
 
 - Contracts have 2 entry points, where generic functions or storage may be accessed
-    - @external for writing -> @storage to write state, or use a generic helper function
-    - @view for reading -> @storage to read state, or use a generic helper function
+    - `@external` for writing -> `@storage` to write state, or use a generic helper function.
+    - `@view` for reading -> `@storage` to read state, or use a generic helper function.
 
 ```javascript
 // Declare this file as a StarkNet contract.
@@ -831,6 +942,9 @@ func helper_3(a_b_data: dataStruct) -> (processed_data: felt) {
 ### **If Else**
 
 **DESCRIPTION**
+- Cairo supports the conditional statements of `if` and `else`.
+- The `else if` statement is currently not supported.
+- Conditions can be combined using the `and` operator but the `not` and `or` boolean operators are not supported.
 
 ```javascript
 // Declare this file as a StarkNet contract.
@@ -965,6 +1079,9 @@ func perform_function_total{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, rang
 ### **Recursive Loops**
 
 **DESCRIPTION**
+- Cairo currently only supports loops through recursion.
+- It does not support familiar loop constructs such as `for`, `while` or `do while`. 
+
 - Steps to Recursive Loops
     - Specify loop length
     - A looping function is called with a list of elements
@@ -1012,6 +1129,8 @@ func get_sum(array: felt*, length: felt) -> (sum: felt) {
 ## **Custom Imports**
 
 **DESCRIPTION**
+- Reusable functions can be stored inside a seperate `.cairo` file and import it.
+- This helps to ensure modularity and code-reuse.
 
 ```javascript
 // custom_imports.cairo
@@ -1066,6 +1185,12 @@ func get_modulo{range_check_ptr}(a: felt, b: felt) -> (result: felt) {
 ## **Interfaces**
 
 **DESCRIPTION**
+- Contracts can make a call to another contract which enables extensibility and composability.
+- To be able to do this, the contract making the call must be made aware of the interface of the contract it is calling to.
+- Interfaces only contain the functions that are required and is decorated using the `@contract_interface` decorator.
+- When calling an interface function, the first parameter will always be the underlying contract address.
+- Two contracts that can read and write to each other requires checking of permissions, ensuring that the contract is only ever called from a permissioned contract.
+    - The constructor is a good time to permanently save an address/parameter to enforce the permissions.
 
 ### **Contract A Calls B**
 
@@ -1215,28 +1340,28 @@ func increment{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
 
 ```
 
-## **Math**
+## **Mathematics**
 
-### **Math Common Library**
+### **Math Operators Modules**
 
 **DESCRIPTION**
-
-- Not zero - `assert_not_zero(val)` : Asserts val is not zero.
-- Not equal - `assert_not_equal(a, b)` : Asserts that a is not equal to b.
-- Not negative - `assert_nn(val)` : Asserts that val is not negative.
-- Less than or equal to - `assert_le(a, b)` : Asserts that a is less than or equal to b.
-- Less than - `assert_lt(a, b)` : Asserts that a is less than b.
-- Not negative and less than or equal to - `assert_nn_le()` : Asserts a is not negative and less than or equal to b
-- In range - `assert_in_range(val, a, b)` : Asserts val is both greater than or equal to a, and less than b.
-- 250-bit - `assert_250_bit(val)` : Asserts that val is smaller than the maxiumum value in 250-bit space and non negative
-- Split felt - `split_felt(val)` : Returns high and low of parts of val.
-- Less than or equal to with split felt - `assert_le_felt(a, b)` : Asserts a is less than or equal to b using split felt method
-- Less than with split felt - `assert_lt_felt(a, b)` : Asserts a is less than b using split felt method
-- Absolute value - `abs_value(val)` : Returns val as positive value
-- Sign - `sign(val)` : Returns one of -1, 0 or 1 for a val that is negative, zero or positive respectively.
-- Unsigned division remainder : `unsigned_div_rem(value, div)` : Returns the quotient q and remainder r from the integer division of value/div as positive values
-- Signed division remainder : `signed_div_rem(value, div)` : Returns the quotient q and remainder r from the integer division of value/div, with quotient sign either positive or negative
-    - Handles integer and modulo operations with negative numbers in the same way python does, where -100 // 3 = -43 & -100 % 3 = 2
+- The Cairo common library has modules for some common mathematic operations.
+    - Not zero - `assert_not_zero(val)` : Asserts val is not zero.
+    - Not equal - `assert_not_equal(a, b)` : Asserts that a is not equal to b.
+    - Not negative - `assert_nn(val)` : Asserts that val is not negative.
+    - Less than or equal to - `assert_le(a, b)` : Asserts that a is less than or equal to b.
+    - Less than - `assert_lt(a, b)` : Asserts that a is less than b.
+    - Not negative and less than or equal to - `assert_nn_le()` : Asserts a is not negative and less than or equal to b
+    - In range - `assert_in_range(val, a, b)` : Asserts val is both greater than or equal to a, and less than b.
+    - 250-bit - `assert_250_bit(val)` : Asserts that val is smaller than the maxiumum value in 250-bit space and non negative
+    - Split felt - `split_felt(val)` : Returns high and low of parts of val.
+    - Less than or equal to with split felt - `assert_le_felt(a, b)` : Asserts a is less than or equal to b using split felt method
+    - Less than with split felt - `assert_lt_felt(a, b)` : Asserts a is less than b using split felt method
+    - Absolute value - `abs_value(val)` : Returns val as positive value
+    - Sign - `sign(val)` : Returns one of -1, 0 or 1 for a val that is negative, zero or positive respectively.
+    - Unsigned division remainder : `unsigned_div_rem(value, div)` : Returns the quotient q and remainder r from the integer division of value/div as positive values
+    - Signed division remainder : `signed_div_rem(value, div)` : Returns the quotient q and remainder r from the integer division of value/div, with quotient sign either positive or negative
+        - Handles integer and modulo operations with negative numbers in the same way python does, where -100 // 3 = -43 & -100 % 3 = 2
 
 ```javascript
 // Declare this file as a StarkNet contract.
@@ -1349,16 +1474,18 @@ func check_values{range_check_ptr}(num_1: felt, num_2: felt) -> (
 
 ```
 
-### **Math Comparators**
+### **Math Comparators Modules**
 
 **DESCRIPTION**
-
-- Not Zero - `is_not_zero(val)` : Checks if val is not zero
-- Not Negative - `is_nn(val)` : Checks if val is not negative
-- Not Negative and less than or equal to - `is_nn_le(val)` : Checks if val is not negative and is less than or equal to a
-- Less than or equal to - `is_le(val, a)` : Checks if val less than or equal to a
-- In range - `is_in_range(val, a, b)` - Checks if val larger than or equal to a and smaller than or equal to b
-- Less than or equal to for felts - `is_le_felt(a, b)` : Checks if a_high is less than b_high, obtained using split_felt(val)
+- The Cairo common library has modules that make a comparison to check for a particular condition.
+- True results are returned as `1`.
+- False results are returned as `0`.
+    - Not Zero - `is_not_zero(val)` : Checks if val is not zero
+    - Not Negative - `is_nn(val)` : Checks if val is not negative
+    - Not Negative and less than or equal to - `is_nn_le(val)` : Checks if val is not negative and is less than or equal to a
+    - Less than or equal to - `is_le(val, a)` : Checks if val less than or equal to a
+    - In range - `is_in_range(val, a, b)` - Checks if val larger than or equal to a and smaller than or equal to b
+    - Less than or equal to for felts - `is_le_felt(a, b)` : Checks if a_high is less than b_high, obtained using `split_felt(val)`
 
 ```javascript
 // Declare this file as a StarkNet contract.
@@ -1409,12 +1536,14 @@ func check_values{range_check_ptr}(number: felt) -> (
 }
 ```
 
-### **Bitwise Operations**
+### **Bitwise Operations Modules**
 
 **DESCRIPTION**
-- `bitwise_and(x, y)` - the result of bitwise AND operation on x and y
-- `bitwise_xor(x, y)` - the result of bitwise XOR operation on x and y
-- `bitwise_or(x, y)` - the result of bitwise OR operation on x and y
+- Bitwise operations `AND`, `XOR` and `OR` are available using the `bitwise()` module from the Cairo common library.
+    - `bitwise_and(x, y)` - the result of bitwise AND operation on x and y
+    - `bitwise_xor(x, y)` - the result of bitwise XOR operation on x and y
+    - `bitwise_or(x, y)` - the result of bitwise OR operation on x and y
+- All three operations can also be obtained with the `bitwise_operations(x, y)` function.
 
 ```javascript
 %builtins bitwise
@@ -1463,55 +1592,13 @@ func main{bitwise_ptr: BitwiseBuiltin*}() -> () {
 }
 ```
 
-### **Counter**
-
-**DESCRIPTION**
-
-- The three implicit arguments are required for storage operations.
-- When returning function call values to a reference, ensure the reference is inside brackets.
-
-```javascript
-// Declare this file as a StarkNet contract.
-%lang starknet
-// Range check will ensure numbers stay within the felt range
-// Pedersen will allow us to use the Pedersen hash function native to many operations
-%builtins pedersen range_check
-
-// The HashBuiltin type is required when passing a pedersen_ptr as an implicit argument
-from starkware.cairo.common.cairo_builtins import HashBuiltin
-
-// Creating a variable called 'count' that stores a felt
-@storage_var
-func balance() -> (res: felt) {
-}
-
-// Function to retrieve current balance
-@view
-func get{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}() -> (value: felt) {
-    let (value) = balance.read();
-    return (value,);
-}
-
-// Function to increment balance by 1
-@external
-func increment{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}() {
-    let (res) = balance.read();
-    balance.write(res + 1);
-    return ();
-}
-
-// Function to decrement balance by 1
-@external
-func decrement{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}() {
-    let (res) = balance.read();
-    balance.write(res - 1);
-    return ();
-}
-```
-
 ### **Currency**
 
 **DESCRIPTION**
+- Cairo has no sense of a native currency.
+- Any variable can be used to create a system of ownership of Layer-1 Ethereum tokens.
+- The contract needs to check that the sender is the owner of the tokens. 
+- The example below is a wallet system which does not check if the sender of a transaction has the permissions to control a given wallet.
 
 ```javascript
 // Declare this file as a StarkNet contract.
@@ -1566,8 +1653,9 @@ func check_wallet{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_pt
 
 **DESCRIPTION**
 - Starknet contract can message L1 using the send_message_to_L1() function containing the arguments `to_address`, `payload_size` and `payload`.
-
 - This can be recieved by calling the L1 Starkent contract function `consumeMessageFromL2()` from the addressed specified in the `to_address` above containing the arguments `from_address` (L2 address) and `payload`.
+- If the message is not valid, the transaction will fail.
+
 
 ```javascript
 // Declare this file as a StarkNet contract.
@@ -1600,12 +1688,21 @@ func generate{syscall_ptr: felt*, range_check_ptr}() {
 
 **DESCRIPTION**
 
-StarkNet (SN) contract can specify a message for an L1 Ethereum (ETH) contract to recieve.
-Three steps to this - generate, verify and digest
-STEPS:
-- 1: Custom contract on SN : Generates message -> application specific contract containing `send_message_to_l1()`
-- 2: SN contract on ETH : Verifies message validity -> StarkNet.sol contains function `consumeMessageFromL2()` -> computes the hash that ties the messages to both L1 and L2 contracts -> checks hash is stored as a fact, verified by STARK validity proof
-- 3: Custom contract on ETH : Digests message -> L1L2Example.sol contains `withdraw()` function. -> this calls `StarkNet.sol` and verifies that the payload is valid from the specified L2 address.
+- A L2 contract can specify a message for an L1 Ethereum contract to recieve.
+- There are three steps to this - generate, verify and digest
+- Steps to sending message to L1:
+    - 1: Custom contract on L2: 
+        - Generates message 
+        - Application specific contract containing `send_message_to_l1()` common library module.
+    - 2: StarkNet contract on ETH: 
+        - Verifies message validity 
+        - StarkNet.sol contains function `consumeMessageFromL2()` 
+        - This computes the hash that ties the messages to both L1 and L2 contracts 
+        - It then checks that the hash is stored as a fact, verified by STARK validity proof
+    - 3: Custom contract on ETH L1:
+        - Digests message
+        - L1L2Example.sol contains `withdraw()` function.
+        - L1 Contract calls `StarkNet.sol` and verifies that the payload is valid from the specified L2 address.
 
 ```javascript
 // Declare this file as a StarkNet contract.
@@ -1649,9 +1746,8 @@ func increase_L1_balance{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_c
 ### **Recieve Message**
 
 **DESCRIPTION**
-- StarkNet contract can receive an L1 message using the @l1_handler
-- The recieving function is 'actioned' by the Starknet sequencer and then recieves the arguments `from_address` (l1 contract address thag sent the message) and message elements as type felt.
-
+- StarkNet contract can receive an L1 message using the @l1_handler.
+- The recieving function is 'actioned' by the Starknet sequencer and then recieves the arguments `from_address` (l1 contract address that sent the message) and message elements as type felt.
 - The message originates on L1 with a call to Starknet contract function sendMessageToL2() with the arguments `to_address` (L2 address), `selector` and `payload`.
 
 ```javascript
@@ -1686,6 +1782,7 @@ func recieve{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
 ### **Pedersen Hash**
 
 **DESCRIPTION**
+- The Pedersen hash of two elements `x` and `y` can be found using the `hash2(x, y)` module from the Cairo common library.
 
 ```javascript
 // Declare this file as a StarkNet contract.
@@ -1715,12 +1812,12 @@ func get_hash{pedersen_ptr: HashBuiltin*}(x, y) -> (hash: felt, hash_with_zero: 
 
 **DESCRIPTION**
 - Cairo has a bultin to perform ECDSA signature verification.
-- STEPS:
+- Steps to perform ECDSA verification:
     - 1: Create a message to sign
-    - 2: hash message using pedersen function 
-    - 3: obtain private key 
-    - 4: sign message hash using priv key 
-    - 5: record sig_r & sig_s
+    - 2: Hash message using pedersen function 
+    - 3: Obtain the private key 
+    - 4: Sign message hash using private key 
+    - 5: Record sig_r & sig_s
 
 - A Python script can be used to generate private key but in this case, we are using the hardcoded values.
 

@@ -361,6 +361,100 @@ func get_value_of_key{range_check_ptr}(key_1: felt, key_2: felt, key_3: felt) ->
 }
 ```
 
+### **Pointers**
+
+**DESCRIPTION**
+
+```rust
+// Declare this file as a StarkNet contract.
+%lang starknet
+
+from starkware.cairo.common.registers import get_fp_and_pc
+
+// Pointers are used to communicate a data structure between functions.
+// Rather than passing a tuple, a function can pass a pointer to the start of the tuple in memory.
+@view
+func use_pointer(number: felt) -> (res: felt) {
+    // Variable 'tuple' is assigned to the pointer to the tuple, which is returned by the function.
+    // This variable is of type felt*.
+    let (tuple) = tuple_maker(number);
+    // The variable 'val' is set to the value of the third element
+    let val = tuple[2];
+    return (val,);
+}
+
+// This function returns a pointer to a tuple
+func tuple_maker(val: felt) -> (a_tuple: felt*) {
+    alloc_locals;
+    // Declare a tuple
+    local tuple: (felt, felt, felt) = (5, 6, 2 * val);
+    // Local variables are based on the frame pointer,
+    // which can be accessed using the following library
+    let (__fp__, _) = get_fp_and_pc();
+    // & denotes the address, in this case, the address of the tuple
+    return (&tuple,);
+}
+
+```
+
+### **Data Locations**
+
+**DESCRIPTION**
+
+```rust
+// Declare this file as a StarkNet contract.
+%lang starknet
+// Range check will ensure numbers stay within the felt range
+// Pedersen will allow us to use the Pedersen hash function native to many operations
+%builtins pedersen range_check
+
+// The HashBuiltin type is required when passing a pedersen_ptr as an implicit argument
+from starkware.cairo.common.cairo_builtins import HashBuiltin
+from starkware.cairo.common.alloc import alloc
+
+// Memory
+const a_contract_constant = 5;
+
+// All persistent state appears inside @storage_var
+@storage_var
+func persistent_state() -> (res: felt) {
+}
+
+@external
+func data_locations{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}() {
+    alloc_locals;
+
+    // Storage (@storage_var)
+    persistent_state.write(15);
+
+    // Memory
+    let (an_array: felt*) = alloc();
+    assert [an_array] = 30;
+    assert [an_array + 1] = 60;
+    local a_tuple: (felt, felt, felt) = (100, 200, 300);
+    let a_reference = 500;
+    tempvar a_temporary = 2 * a_reference;
+    const a_function_constant = 1500;
+    local a_local = 2000;
+    let (a_state_reference) = persistent_state.read();
+    let (local a_local_reference) = persistent_state.read();
+
+    // The function could return any one of the above variables.
+    return ();
+}
+
+@view
+func read_values{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}() -> (
+    val_1: felt, val_2: felt
+) {
+    // Only the Storage is available to someone calling this contract
+    // Of all variables in this contract, only one is available
+    let (val1) = persistent_state.read();
+    let val2 = a_contract_constant;
+    return (val1, val2);
+}
+```
+
 ## **Setters and Getters**
 
 ### **Asserts** 
@@ -608,99 +702,6 @@ func score_user{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}
 }
 ```
 
-## **Data Locations**
-
-**DESCRIPTION**
-
-```rust
-// Declare this file as a StarkNet contract.
-%lang starknet
-// Range check will ensure numbers stay within the felt range
-// Pedersen will allow us to use the Pedersen hash function native to many operations
-%builtins pedersen range_check
-
-// The HashBuiltin type is required when passing a pedersen_ptr as an implicit argument
-from starkware.cairo.common.cairo_builtins import HashBuiltin
-from starkware.cairo.common.alloc import alloc
-
-// Memory
-const a_contract_constant = 5;
-
-// All persistent state appears inside @storage_var
-@storage_var
-func persistent_state() -> (res: felt) {
-}
-
-@external
-func data_locations{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}() {
-    alloc_locals;
-
-    // Storage (@storage_var)
-    persistent_state.write(15);
-
-    // Memory
-    let (an_array: felt*) = alloc();
-    assert [an_array] = 30;
-    assert [an_array + 1] = 60;
-    local a_tuple: (felt, felt, felt) = (100, 200, 300);
-    let a_reference = 500;
-    tempvar a_temporary = 2 * a_reference;
-    const a_function_constant = 1500;
-    local a_local = 2000;
-    let (a_state_reference) = persistent_state.read();
-    let (local a_local_reference) = persistent_state.read();
-
-    // The function could return any one of the above variables.
-    return ();
-}
-
-@view
-func read_values{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}() -> (
-    val_1: felt, val_2: felt
-) {
-    // Only the Storage is available to someone calling this contract
-    // Of all variables in this contract, only one is available
-    let (val1) = persistent_state.read();
-    let val2 = a_contract_constant;
-    return (val1, val2);
-}
-```
-
-### **Pointers**
-
-**DESCRIPTION**
-
-```rust
-// Declare this file as a StarkNet contract.
-%lang starknet
-
-from starkware.cairo.common.registers import get_fp_and_pc
-
-// Pointers are used to communicate a data structure between functions.
-// Rather than passing a tuple, a function can pass a pointer to the start of the tuple in memory.
-@view
-func use_pointer(number: felt) -> (res: felt) {
-    // Variable 'tuple' is assigned to the pointer to the tuple, which is returned by the function.
-    // This variable is of type felt*.
-    let (tuple) = tuple_maker(number);
-    // The variable 'val' is set to the value of the third element
-    let val = tuple[2];
-    return (val,);
-}
-
-// This function returns a pointer to a tuple
-func tuple_maker(val: felt) -> (a_tuple: felt*) {
-    alloc_locals;
-    // Declare a tuple
-    local tuple: (felt, felt, felt) = (5, 6, 2 * val);
-    // Local variables are based on the frame pointer,
-    // which can be accessed using the following library
-    let (__fp__, _) = get_fp_and_pc();
-    // & denotes the address, in this case, the address of the tuple
-    return (&tuple,);
-}
-
-```
 ## **Function Decorators**
 
 ### **Constructors**

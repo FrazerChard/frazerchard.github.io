@@ -1008,13 +1008,14 @@ func get_sum(array: felt*, length: felt) -> (sum: felt) {
 
 ```
 
-## **Imports**
+## **Custom Imports**
 
 **DESCRIPTION**
 
-### **Custom Imports**
-
 ```rust
+// custom_imports.cairo
+
+
 // Declare this file as a StarkNet contract.
 %lang starknet
 // Range check will ensure numbers stay within the felt range
@@ -1036,9 +1037,10 @@ func get_calculations{range_check_ptr}(first: felt, second: felt) -> (sum: felt,
 }
 ```
 
-### **Custom Math Library**
-
 ```rust
+// utils/math.cairo
+
+
 %lang starknet
 // Function is from common library
 from starkware.cairo.common.math import unsigned_div_rem
@@ -1064,10 +1066,9 @@ func get_modulo{range_check_ptr}(a: felt, b: felt) -> (result: felt) {
 
 **DESCRIPTION**
 
+### **Contract A Calls B**
+
 ```rust
-// Contract Calls A
-
-
 // Declare this file as a StarkNet contract.
 %lang starknet
 // Range check will ensure numbers stay within the felt range
@@ -1141,11 +1142,9 @@ func set_B_address{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_p
 }
 
 ```
+### **Contract B Calls A**
 
 ```rust
-// Contract Calls B
-
-
 // Declare this file as a StarkNet contract.
 %lang starknet
 // Range check will ensure numbers stay within the felt range
@@ -1211,7 +1210,7 @@ func increment{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
 
 ## **Math**
 
-### **Math Library**
+### **Math Common Library**
 
 **DESCRIPTION**
 
